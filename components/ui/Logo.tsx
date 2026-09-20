@@ -1,99 +1,64 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-/**
- * Aarsoft mark — an abstract "A" built from a node and two connection
- * strokes, matching the brand pattern language (grid, nodes, data flow).
+/*
+ * The supplied logo artwork, in the two crops the site needs.
+ *
+ * `wordmark` drops the "Innovate · Integrate · Elevate" line, because at
+ * header size that line renders a few pixels tall and turns to mush. The
+ * footer has the room for the whole lockup, so it uses `full`.
+ *
+ * Intrinsic sizes are declared so the browser reserves the right space
+ * before the file arrives and the bar never jumps on load.
  */
-export function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      aria-hidden="true"
-      className={cn("h-8 w-8", className)}
-    >
-      <rect width="32" height="32" rx="8" fill="var(--color-black)" />
-      {/* Left stroke of the A */}
-      <path
-        d="M9 23.5 15.2 9.5"
-        stroke="url(#aarsoft-mark-gradient)"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      {/* Right stroke of the A */}
-      <path
-        d="M23 23.5 16.8 9.5"
-        stroke="var(--color-lavender)"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeOpacity="0.55"
-      />
-      {/* Crossbar rendered as a data connection */}
-      <path
-        d="M11.8 18.4h8.4"
-        stroke="var(--color-gold)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      {/* Apex node */}
-      <circle cx="16" cy="8.4" r="2.4" fill="var(--color-gold)" />
-      <defs>
-        <linearGradient
-          id="aarsoft-mark-gradient"
-          x1="9"
-          y1="23.5"
-          x2="16"
-          y2="9.5"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="var(--color-lavender)" />
-          <stop offset="1" stopColor="var(--color-gold)" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
+const ART = {
+  wordmark: { src: "/aarsoft-logo-wordmark.webp", width: 1931, height: 573 },
+  full: { src: "/aarsoft-logo.webp", width: 1931, height: 669 },
+} as const;
 
-/** Full lockup: mark plus wordmark. */
+/**
+ * Brand lockup, linked home.
+ *
+ * The artwork carries its own colour, so there is no light and dark
+ * variant to pick between; it sits on every ground unchanged.
+ */
 export function Logo({
-  dark = false,
+  variant = "wordmark",
   className,
+  imageClassName,
   href = "/",
+  priority = false,
 }: {
-  /** True when sitting on a dark surface. */
-  dark?: boolean;
+  /** `full` keeps the tagline. Use it only where there is room to read it. */
+  variant?: keyof typeof ART;
   className?: string;
+  /** Sets the drawn height; width follows the artwork's own proportions. */
+  imageClassName?: string;
   href?: string;
+  priority?: boolean;
 }) {
+  const art = ART[variant];
+
   return (
     <Link
       href={href}
-      className={cn(
-        "group inline-flex items-center gap-2.5 rounded-[var(--radius-sm)]",
-        className,
-      )}
+      className={cn("group inline-flex items-center rounded-[var(--radius-sm)]", className)}
       aria-label="Aarsoft Technologies — home"
     >
-      <LogoMark className="h-9 w-9 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105" />
-      <span className="flex flex-col leading-none">
-        <span
-          className={cn(
-            "font-display text-[1.125rem] font-semibold tracking-[-0.02em]",
-            dark ? "text-white" : "text-ink-900",
-          )}
-        >
-          Aarsoft
-        </span>
-        <span
-          className={cn(
-            "mt-1 text-[0.5625rem] uppercase tracking-[0.22em]",
-            dark ? "text-ink-400" : "text-ink-400",
-          )}
-        >
-          Technologies
-        </span>
-      </span>
+      <Image
+        src={art.src}
+        width={art.width}
+        height={art.height}
+        priority={priority}
+        /* The link is already labelled, so the art is decorative here. */
+        alt=""
+        className={cn(
+          /* object-contain keeps the artwork's shape if a narrow column clamps the width. */
+          "w-auto max-w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]",
+          imageClassName ?? "h-8",
+        )}
+      />
     </Link>
   );
 }

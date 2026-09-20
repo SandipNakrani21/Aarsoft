@@ -131,7 +131,7 @@ export function Navbar() {
                 : "border border-transparent bg-transparent",
             )}
           >
-            <Logo dark={lightText} />
+            <Logo priority imageClassName="h-12" />
 
           <ul className="hidden items-center gap-1 lg:flex">
             {mainNav.map((item) => (

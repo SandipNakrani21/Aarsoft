@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { WhatsAppIcon, XIcon } from "@/components/ui/BrandIcons";
 import { footerNav, legalNav, site } from "@/data/site";
-import { LogoMark } from "@/components/ui/Logo";
+import { Logo } from "@/components/ui/Logo";
 import { ArrowIcon } from "@/components/ui/Button";
 
 /**
@@ -52,49 +52,15 @@ export function Footer() {
       <div className="container-x relative">
         <div className="grid gap-8 pb-4 pt-8 md:grid-cols-2 md:pb-5 md:pt-9 lg:grid-cols-12 lg:gap-8">
           {/* Brand column */}
-          <div className="lg:col-span-5">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-3"
-              aria-label="Aarsoft Technologies — home"
-            >
-              <LogoMark className="h-11 w-11" />
-              <span className="flex flex-col leading-none">
-                <span className="text-xl font-semibold tracking-[-0.02em] text-white">
-                  Aarsoft
-                </span>
-                <span className="mt-1.5 text-[0.625rem] uppercase tracking-[0.22em] text-ink-400">
-                  Technologies
-                </span>
-              </span>
-            </Link>
+          <div className="lg:col-span-4">
+            {/* The footer has the width for the full lockup, tagline included. */}
+            <Logo variant="full" imageClassName="h-20 xl:h-28" />
 
             <p className="mt-4 max-w-[40ch] text-[1.1875rem] leading-relaxed text-ink-300">
               A digital engineering and product development partner helping startups,
               businesses and agencies build software that drives real business impact.
             </p>
 
-            {/* Social icons */}
-            <ul className="mt-5 flex flex-wrap gap-2.5">
-              {site.social.map((item) => {
-                const Icon = socialIcons[item.icon];
-                if (!Icon) return null;
-                return (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={item.label}
-                      title={item.label}
-                      className="btn-gradient relative isolate flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] text-ink-300 transition-colors duration-300 hover:border-transparent hover:text-ink-900"
-                    >
-                      <Icon className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
           </div>
 
           {/* Link columns */}
@@ -120,7 +86,8 @@ export function Footer() {
           ))}
 
           {/* Contact column */}
-          <div className="lg:col-span-3">
+          {/* Wider than the link columns so the five social marks hold one row. */}
+          <div className="lg:col-span-4">
             <h2 className="text-[0.9375rem] font-semibold uppercase tracking-[0.18em] text-lavender">
               Contact
             </h2>
@@ -143,6 +110,28 @@ export function Footer() {
                   {site.contact.phone}
                 </a>
               </li>
+            </ul>
+
+            {/* Social icons sit with the rest of the ways to reach us. */}
+            <ul className="mt-5 flex flex-wrap gap-2.5">
+              {site.social.map((item) => {
+                const Icon = socialIcons[item.icon];
+                if (!Icon) return null;
+                return (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={item.label}
+                      title={item.label}
+                      className="btn-gradient relative isolate flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] text-ink-300 transition-colors duration-300 hover:border-transparent hover:text-ink-900"
+                    >
+                      <Icon className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Matches the social buttons: a bordered pill that fills with the gradient */}
