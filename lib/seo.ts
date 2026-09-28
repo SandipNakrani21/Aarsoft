@@ -67,7 +67,7 @@ export function organizationSchema() {
     url: site.url,
     slogan: site.tagline,
     description: site.description,
-    logo: `${site.url}/icon.svg`,
+    logo: `${site.url}/aarsoft-mark.png`,
     email: site.contact.email,
     sameAs: site.social.map((s) => s.href),
   };
@@ -142,7 +142,7 @@ export function articleSchema(post: {
     publisher: {
       "@type": "Organization",
       name: site.name,
-      logo: { "@type": "ImageObject", url: `${site.url}/icon.svg` },
+      logo: { "@type": "ImageObject", url: `${site.url}/aarsoft-mark.png` },
     },
     mainEntityOfPage: `${site.url}/insights/${post.slug}`,
   };
