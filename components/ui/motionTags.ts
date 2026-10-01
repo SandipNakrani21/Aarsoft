@@ -21,6 +21,8 @@ export const motionTags = {
   section: motion.section,
   article: motion.article,
   figure: motion.figure,
+  nav: motion.nav,
+  header: motion.header,
   h1: motion.h1,
   h2: motion.h2,
   h3: motion.h3,

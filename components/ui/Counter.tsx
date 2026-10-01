@@ -17,12 +17,15 @@ export function Counter({
   prefix = "",
   suffix = "",
   duration = 1800,
+  start = true,
 }: {
   to?: number;
   literal: string;
   prefix?: string;
   suffix?: string;
   duration?: number;
+  /** Hold the count at zero until this turns true, e.g. behind the intro loader. */
+  start?: boolean;
 }) {
   const reduced = useReducedMotion();
   const animatable = typeof to === "number" && !reduced;
@@ -30,13 +33,13 @@ export function Counter({
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    if (!animatable || !shown) return;
+    if (!animatable || !shown || !start) return;
 
     let frame = 0;
-    const start = performance.now();
+    const startedAt = performance.now();
 
     const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
+      const progress = Math.min((now - startedAt) / duration, 1);
       // Exponential ease-out so the number settles rather than stopping dead.
       const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       setValue(Math.round(eased * to!));
@@ -45,7 +48,7 @@ export function Counter({
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [animatable, shown, to, duration]);
+  }, [animatable, shown, start, to, duration]);
 
   return (
     <span ref={ref} className="tabular-nums">

@@ -144,7 +144,7 @@ export default function AboutPage() {
 
             <Reveal delay={0.12}>
               <article
-                className="dark-section relative flex h-full flex-col justify-between overflow-hidden rounded-[var(--radius-lg)] p-9 md:p-12"
+                className="dark-section relative flex h-full flex-col justify-between overflow-hidden cta-shape cta-shape-sharp p-9 md:p-12"
                 style={{ backgroundColor: "var(--color-black)" }}
               >
                 <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />

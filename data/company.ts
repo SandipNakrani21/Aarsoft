@@ -3,13 +3,16 @@ import {
   BrainCircuit,
   Building,
   CloudCog,
+  PenTool,
   Database,
-  LockKeyhole,
   MonitorSmartphone,
   Server,
   Compass,
+  Cog,
+  Rocket,
   Eye,
   Factory,
+  GitBranch,
   Globe2,
   HeartHandshake,
   Layers3,
@@ -81,6 +84,8 @@ export const industries: Industry[] = [
 export type ProcessStep = {
   number: string;
   title: string;
+  /** Drawn inside the step badge in the process section. */
+  icon: LucideIcon;
   description: string;
   detail: string;
 };
@@ -89,6 +94,7 @@ export const processSteps: ProcessStep[] = [
   {
     number: "01",
     title: "Discover",
+    icon: Compass,
     description: "Understand the business, users and objectives.",
     detail:
       "Workshops with the people who do the work. We map the current process, the constraints and the outcome that actually matters.",
@@ -96,6 +102,7 @@ export const processSteps: ProcessStep[] = [
   {
     number: "02",
     title: "Define",
+    icon: Lightbulb,
     description: "Create the product strategy and technical direction.",
     detail:
       "Scope, architecture and delivery plan, written down. You approve what gets built before anyone writes code.",
@@ -103,6 +110,7 @@ export const processSteps: ProcessStep[] = [
   {
     number: "03",
     title: "Design",
+    icon: PenTool,
     description: "Build the UX, UI and interaction system.",
     detail:
       "Prototypes tested with real users, then a component system that keeps every screen consistent and buildable.",
@@ -110,6 +118,7 @@ export const processSteps: ProcessStep[] = [
   {
     number: "04",
     title: "Develop",
+    icon: Cog,
     description: "Engineer the product using modern technologies.",
     detail:
       "Agile delivery in short increments with working software at the end of each one, backed by automated testing.",
@@ -117,6 +126,7 @@ export const processSteps: ProcessStep[] = [
   {
     number: "05",
     title: "Launch & Scale",
+    icon: Rocket,
     description: "Deploy, monitor, improve and scale.",
     detail:
       "Staged rollout, monitoring wired in, and continued support as the product and the business grow.",
@@ -242,12 +252,23 @@ export const stats: Stat[] = [
 /* Technology stack                                                    */
 /* ------------------------------------------------------------------ */
 
+/**
+ * A single technology. Named products carry their official logo from
+ * `public/tech`; practices with no brand mark (CI/CD, REST APIs) carry a
+ * line icon instead.
+ */
+export type TechItem = {
+  name: string;
+  logo?: string;
+  icon?: LucideIcon;
+};
+
 export type TechGroup = {
   category: string;
   icon: LucideIcon;
   /** One line on what this layer is responsible for. */
   summary: string;
-  items: string[];
+  items: TechItem[];
 };
 
 export const techStack: TechGroup[] = [
@@ -255,37 +276,75 @@ export const techStack: TechGroup[] = [
     category: "Frontend",
     icon: MonitorSmartphone,
     summary: "Interfaces that stay fast and accessible as the product grows.",
-    items: ["React", "Angular", "TypeScript", "HTML", "CSS"],
+    items: [
+      { name: "React", logo: "/tech/react-original.svg" },
+      { name: "Angular", logo: "/tech/angular-original.svg" },
+      { name: "TypeScript", logo: "/tech/typescript-original.svg" },
+      { name: "HTML", logo: "/tech/html5-original.svg" },
+      { name: "CSS", logo: "/tech/css3-original.svg" },
+    ],
   },
   {
     category: "Backend",
     icon: Server,
     summary: "Services and APIs built to carry real business logic safely.",
-    items: [".NET", "ASP.NET Core", "Node.js", "REST APIs", "Microservices"],
+    items: [
+      { name: ".NET", logo: "/tech/dot-net-original.svg" },
+      { name: "ASP.NET Core", logo: "/tech/dotnetcore-original.svg" },
+      { name: "Node.js", logo: "/tech/nodejs-original.svg" },
+      { name: "Java", logo: "/tech/java-original.svg" },
+      { name: "PHP", logo: "/tech/php-original.svg" },
+    ],
   },
   {
     category: "Database",
     icon: Database,
     summary: "Data models that stay correct and quick at volume.",
-    items: ["PostgreSQL", "SQL Server", "MySQL"],
+    items: [
+      { name: "PostgreSQL", logo: "/tech/postgresql-original.svg" },
+      { name: "SQL Server", logo: "/tech/microsoftsqlserver-original.svg" },
+      { name: "MySQL", logo: "/tech/mysql-original.svg" },
+      { name: "MongoDB", logo: "/tech/mongodb-original.svg" },
+      { name: "Redis", logo: "/tech/redis-original.svg" },
+    ],
   },
   {
     category: "Cloud & DevOps",
     icon: CloudCog,
     summary: "Environments and pipelines that make releases uneventful.",
-    items: ["Azure", "AWS", "Docker", "CI/CD", "Automated Testing"],
+    items: [
+      { name: "Azure", logo: "/tech/azure-original.svg" },
+      { name: "AWS", logo: "/tech/amazonwebservices-original-wordmark.svg" },
+      { name: "Docker", logo: "/tech/docker-original.svg" },
+      { name: "GitHub", logo: "/tech/github-original.svg" },
+      { name: "Cypress", logo: "/tech/cypressio-original.svg" },
+    ],
   },
   {
     category: "AI & Data",
     icon: BrainCircuit,
     summary: "Automation and insight grounded in your own operational data.",
-    items: ["AI & LLM Integrations", "Advanced Analytics", "Business Automation"],
+    items: [
+      { name: "Python", logo: "/tech/python-original.svg" },
+      { name: "TensorFlow", logo: "/tech/tensorflow-original.svg" },
+      { name: "PyTorch", logo: "/tech/pytorch-original.svg" },
+      { name: "Pandas", logo: "/tech/pandas-original.svg" },
+      { name: "Claude", logo: "/tech/claude.svg" },
+      { name: "ChatGPT", logo: "/tech/openai.svg" },
+      { name: "Copilot", logo: "/tech/githubcopilot.svg" },
+    ],
   },
   {
-    category: "Product & Security",
-    icon: LockKeyhole,
-    summary: "Design and access control treated as engineering, not polish.",
-    items: ["UX & Product Design", "Security & Access Control"],
+    category: "UI/UX Design & QA",
+    icon: PenTool,
+    summary: "Interfaces designed around real users, and tested before every release.",
+    items: [
+      { name: "Figma", logo: "/tech/figma-original.svg" },
+      { name: "Adobe XD", logo: "/tech/xd-original.svg" },
+      { name: "Selenium", logo: "/tech/selenium-original.svg" },
+      { name: "Playwright", logo: "/tech/playwright-original.svg" },
+      { name: "Postman", logo: "/tech/postman-original.svg" },
+    ],
   },
 ];
 
@@ -339,17 +398,18 @@ export const testimonials: Testimonial[] = [
 /* Trust strip — technologies we work with, not client or partner claims */
 /* ------------------------------------------------------------------ */
 
-export const trustLabels: string[] = [
-  "React",
-  "Angular",
-  ".NET",
-  "ASP.NET Core",
-  "Node.js",
-  "PostgreSQL",
-  "SQL Server",
-  "Azure",
-  "AWS",
-  "Docker",
-  "TypeScript",
-  "CI/CD",
+export const trustLabels: TechItem[] = [
+  { name: "React", logo: "/tech/react-original.svg" },
+  { name: "Angular", logo: "/tech/angular-original.svg" },
+  { name: ".NET", logo: "/tech/dot-net-original.svg" },
+  { name: "ASP.NET Core", logo: "/tech/dotnetcore-original.svg" },
+  { name: "Node.js", logo: "/tech/nodejs-original.svg" },
+  { name: "PostgreSQL", logo: "/tech/postgresql-original.svg" },
+  { name: "SQL Server", logo: "/tech/microsoftsqlserver-original.svg" },
+  { name: "Azure", logo: "/tech/azure-original.svg" },
+  { name: "AWS", logo: "/tech/amazonwebservices-original-wordmark.svg" },
+  { name: "Docker", logo: "/tech/docker-original.svg" },
+  { name: "TypeScript", logo: "/tech/typescript-original.svg" },
+  // A practice rather than a product, so it takes a line icon instead of a logo.
+  { name: "CI/CD", icon: GitBranch },
 ];

@@ -7,6 +7,7 @@ import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { ProjectVisual } from "@/components/visuals/ProjectVisual";
+import { Parallax } from "@/components/ui/Parallax";
 
 /**
  * Projects as a single band travelling right to left, rather than a tall
@@ -36,7 +37,7 @@ export function WorkMarquee() {
           className="rounded-none"
         />
 
-        <div className="p-6">
+        <div className="p-6 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5">
           <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-400">
             {project.category}
           </span>
@@ -51,7 +52,7 @@ export function WorkMarquee() {
 
           <span className="group/btn mt-5 inline-flex items-center gap-2 text-[1.0625rem] font-medium text-ink-900">
             View case study
-            <ArrowIcon />
+            <ArrowIcon className="group-hover:translate-x-1" />
           </span>
         </div>
       </Link>
@@ -73,8 +74,12 @@ export function WorkMarquee() {
         </SplitHeading>
       </div>
 
-      {/* Full-bleed band, so cards run past both edges of the container */}
-      <div className="mask-fade-x mt-10 overflow-hidden">
+      {/*
+       * Full-bleed band, so cards run past both edges of the container.
+       * On desktop the whole band also drifts sideways with the page scroll,
+       * layered over the marquee, so the row answers the reader's movement.
+       */}
+      <Parallax axis="x" offset={48} className="mask-fade-x mt-10 overflow-hidden">
         {reduced ? (
           <ul className="no-scrollbar container-x flex gap-6 overflow-x-auto pb-2">
             {caseStudies.map((project) => card(project, false))}
@@ -85,7 +90,7 @@ export function WorkMarquee() {
             {caseStudies.map((project) => card(project, true))}
           </ul>
         )}
-      </div>
+      </Parallax>
     </Section>
   );
 }

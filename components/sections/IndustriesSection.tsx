@@ -1,4 +1,5 @@
 import { industries } from "@/data/company";
+import { slugify } from "@/lib/utils";
 import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
@@ -29,9 +30,12 @@ export function IndustriesSection() {
             return (
               <RevealItem as="li" key={industry.name}>
                 {/* The lavender wash now comes from .card-box itself. */}
-                <div className="card-box group overflow-hidden p-7">
+                <div
+                  id={slugify(industry.name)}
+                  className="card-box group scroll-mt-32 overflow-hidden p-7"
+                >
                   <Icon
-                    className="h-8 w-8 text-ink-400 transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-ink-900"
+                    className="card-icon h-8 w-8 text-ink-400 group-hover:text-ink-900"
                     strokeWidth={1.5}
                     aria-hidden="true"
                   />

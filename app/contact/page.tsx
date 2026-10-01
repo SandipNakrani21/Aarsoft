@@ -150,7 +150,7 @@ export default function ContactPage() {
 
                 <Reveal delay={0.2}>
                   <div
-                    className="dark-section relative mt-8 overflow-hidden rounded-[var(--radius-lg)] p-8"
+                    className="dark-section relative mt-8 overflow-hidden cta-shape cta-shape-sharp p-8"
                     style={{ backgroundColor: "var(--color-black)" }}
                   >
                     <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />

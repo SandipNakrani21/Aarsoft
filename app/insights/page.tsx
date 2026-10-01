@@ -36,7 +36,7 @@ export default function InsightsPage() {
           <Reveal>
             <Link
               href={`/insights/${featuredPost.slug}`}
-              className="dark-section group relative grid overflow-hidden rounded-[var(--radius-lg)] lg:grid-cols-12"
+              className="dark-section group relative grid overflow-hidden cta-shape cta-shape-sharp lg:grid-cols-12"
               style={{ backgroundColor: "var(--color-black)" }}
             >
               <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />

@@ -42,6 +42,11 @@ export function ProjectVisual({
         backgroundColor: isDark ? "var(--color-black)" : "var(--color-gray)",
       }}
     >
+      {/*
+       * Hovering the card zooms the artwork a few percent inside its frame.
+       * The root clips, so the zoom never spills over the card's edge.
+       */}
+      <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]">
       <div
         aria-hidden="true"
         className={cn("absolute inset-0", isDark ? "brand-grid-dark" : "brand-grid")}
@@ -73,6 +78,17 @@ export function ProjectVisual({
           {variant === "ai" && <AiBody {...{ line, barMuted, barStrong }} />}
         </div>
       </div>
+      </div>
+
+      {/* Overlay that deepens the lower edge on hover, grounding the artwork. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(13,12,21,0.14) 0%, rgba(193,184,255,0.08) 45%, transparent 75%)",
+        }}
+      />
     </div>
   );
 }

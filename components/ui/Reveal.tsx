@@ -4,8 +4,10 @@ import { useReducedMotion, type Variants, type HTMLMotionProps } from "framer-mo
 import type { ElementType, ReactNode } from "react";
 import { resolveMotionTag } from "./motionTags";
 import { useReveal } from "@/hooks/useReveal";
+import { EASE_OUT, revealTransition, staggerItem } from "@/lib/motion";
 
-type Direction = "up" | "down" | "left" | "right" | "none";
+/** `scale` grows in from 96%, for visuals and panels rather than copy. */
+type Direction = "up" | "down" | "left" | "right" | "scale" | "none";
 
 type RevealProps = {
   children: ReactNode;
@@ -30,6 +32,8 @@ const offset = (direction: Direction, distance: number) => {
       return { x: distance };
     case "right":
       return { x: -distance };
+    case "scale":
+      return { scale: 0.96, y: distance * 0.5 };
     default:
       return {};
   }
@@ -65,8 +69,8 @@ export function Reveal({
       ref={ref}
       className={className}
       initial={{ opacity: 0, ...offset(direction, distance) }}
-      animate={shown ? { opacity: 1, x: 0, y: 0 } : undefined}
-      transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
+      animate={shown ? { opacity: 1, x: 0, y: 0, scale: 1 } : undefined}
+      transition={revealTransition(delay, duration)}
       {...rest}
     >
       {children}
@@ -85,13 +89,20 @@ const containerVariants: Variants = {
   }),
 };
 
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
+const itemVariants = staggerItem;
+
+/*
+ * A second tier of stagger inside an item — the chips on a technology card,
+ * say. It inherits the group's "visible" signal, so it needs no trigger of
+ * its own, and waits for its card to land before starting.
+ */
+const subItemVariants: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: (index: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
-  },
+    transition: { duration: 0.45, delay: 0.3 + index * 0.04, ease: EASE_OUT },
+  }),
 };
 
 /** Parent for a list whose children should animate in sequence. */
@@ -151,6 +162,34 @@ export function RevealItem({
 
   return (
     <MotionTag className={className} variants={itemVariants}>
+      {children}
+    </MotionTag>
+  );
+}
+
+/** Child of a RevealItem that staggers in after its parent has landed. */
+export function RevealSubItem({
+  children,
+  className,
+  index = 0,
+  as = "li",
+}: {
+  children: ReactNode;
+  className?: string;
+  index?: number;
+  as?: ElementType;
+}) {
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    const Tag = as as ElementType;
+    return <Tag className={className}>{children}</Tag>;
+  }
+
+  const MotionTag = resolveMotionTag(as as string);
+
+  return (
+    <MotionTag className={className} variants={subItemVariants} custom={index}>
       {children}
     </MotionTag>
   );

@@ -280,7 +280,8 @@ export function ContactForm() {
 const fieldClasses = (hasError: boolean) =>
   cn(
     "w-full rounded-[var(--radius-sm)] border bg-white px-4 py-3 text-[1.125rem] text-ink-900",
-    "placeholder:text-ink-300 transition-colors duration-200",
+    /* Box-shadow is included so the focus ring eases in with the border. */
+    "placeholder:text-ink-300 transition-[border-color,box-shadow] duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white",
     hasError
       ? "border-ink-900 focus:ring-ink-900"

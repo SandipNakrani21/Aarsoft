@@ -5,6 +5,7 @@ import { WhatsAppIcon, XIcon } from "@/components/ui/BrandIcons";
 import { footerNav, legalNav, site } from "@/data/site";
 import { Logo } from "@/components/ui/Logo";
 import { ArrowIcon } from "@/components/ui/Button";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 
 /**
  * Social platforms are stored as keys in the data file, resolved here.
@@ -50,23 +51,35 @@ export function Footer() {
       />
 
       <div className="container-x relative">
-        <div className="grid gap-8 pb-4 pt-8 md:grid-cols-2 md:pb-5 md:pt-9 lg:grid-cols-12 lg:gap-8">
+        {/* Columns settle in left to right as the footer comes into view. */}
+        <RevealGroup
+          stagger={0.08}
+          className="grid gap-8 pb-4 pt-8 md:grid-cols-2 md:pb-5 md:pt-9 lg:flex lg:justify-between lg:gap-6 xl:gap-8"
+        >
           {/* Brand column */}
-          <div className="lg:col-span-4">
-            {/* The footer has the width for the full lockup, tagline included. */}
-            <Logo variant="full" imageClassName="h-20 xl:h-28" />
+          <RevealItem className="md:col-span-2 lg:min-w-0 lg:flex-[0_1_20rem]">
+            {/* Full lockup, tagline included. In the single row it scales to the
+                column width rather than holding a fixed height. */}
+            <Logo
+              variant="full"
+              className="lg:w-full lg:max-w-[18rem]"
+              imageClassName="h-16 lg:h-auto lg:w-full"
+            />
 
-            <p className="mt-4 max-w-[40ch] text-[1.1875rem] leading-relaxed text-ink-300">
+            <p className="mt-[0.65rem] max-w-[40ch] text-[1rem] leading-relaxed text-ink-300 lg:text-[0.9375rem] xl:text-[0.9375rem]">
               A digital engineering and product development partner helping startups,
               businesses and agencies build software that drives real business impact.
             </p>
 
-          </div>
+          </RevealItem>
 
-          {/* Link columns */}
+          {/* Link columns keep their natural width; the row spreads the spare
+              space into equal gaps. From xl each label holds one line and only the
+              brand column gives way; below that, long labels wrap to fit. */}
           {footerNav.map((group) => (
-            <nav key={group.title} aria-label={group.title} className="lg:col-span-2">
-              <h2 className="text-[0.9375rem] font-semibold uppercase tracking-[0.18em] text-lavender">
+            <RevealItem key={group.title} className="lg:flex-[0_1_auto] xl:flex-none">
+            <nav aria-label={group.title}>
+              <h2 className="text-[0.875rem] font-semibold uppercase tracking-[0.16em] text-lavender lg:text-[0.75rem] lg:tracking-[0.12em] xl:text-[0.8125rem] xl:tracking-[0.16em]">
                 {group.title}
               </h2>
               <ul className="mt-4 space-y-2.5">
@@ -74,8 +87,7 @@ export function Footer() {
                   <li key={`${group.title}-${link.label}`}>
                     <Link
                       href={link.href}
-                      data-text={link.label}
-                      className="link-rise text-[1.1875rem] text-ink-300 transition-colors duration-200 hover:text-white"
+                      className="link-rise link-rise-flat text-[1rem] text-ink-300 lg:text-[0.9375rem] xl:whitespace-nowrap xl:text-[0.9375rem] transition-colors duration-200 hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -83,20 +95,20 @@ export function Footer() {
                 ))}
               </ul>
             </nav>
+            </RevealItem>
           ))}
 
           {/* Contact column */}
-          {/* Wider than the link columns so the five social marks hold one row. */}
-          <div className="lg:col-span-4">
-            <h2 className="text-[0.9375rem] font-semibold uppercase tracking-[0.18em] text-lavender">
+          {/* Never shrinks, so the email and the social row always hold one line. */}
+          <RevealItem className="md:col-span-2 lg:flex-none">
+            <h2 className="text-[0.875rem] font-semibold uppercase tracking-[0.16em] text-lavender lg:text-[0.75rem] lg:tracking-[0.12em] xl:text-[0.8125rem] xl:tracking-[0.16em]">
               Contact
             </h2>
-            <ul className="mt-4 space-y-2.5 text-[1.1875rem] text-ink-300">
+            <ul className="mt-4 space-y-2.5 text-[1rem] text-ink-300 lg:text-[0.9375rem] xl:text-[0.9375rem]">
               <li>
                 <a
                   href={`mailto:${site.contact.email}`}
-                  data-text={site.contact.email}
-                  className="link-rise transition-colors duration-200 hover:text-white"
+                  className="link-rise link-rise-flat transition-colors duration-200 hover:text-white"
                 >
                   {site.contact.email}
                 </a>
@@ -104,8 +116,7 @@ export function Footer() {
               <li>
                 <a
                   href={`tel:${site.contact.phoneHref}`}
-                  data-text={site.contact.phone}
-                  className="link-rise transition-colors duration-200 hover:text-white"
+                  className="link-rise link-rise-flat transition-colors duration-200 hover:text-white"
                 >
                   {site.contact.phone}
                 </a>
@@ -113,7 +124,7 @@ export function Footer() {
             </ul>
 
             {/* Social icons sit with the rest of the ways to reach us. */}
-            <ul className="mt-5 flex flex-wrap gap-2.5">
+            <ul className="mt-5 flex flex-wrap gap-2">
               {site.social.map((item) => {
                 const Icon = socialIcons[item.icon];
                 if (!Icon) return null;
@@ -125,9 +136,9 @@ export function Footer() {
                       rel="noopener noreferrer"
                       aria-label={item.label}
                       title={item.label}
-                      className="btn-gradient relative isolate flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] text-ink-300 transition-colors duration-300 hover:border-transparent hover:text-ink-900"
+                      className="btn-gradient relative isolate flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] text-ink-300 transition-[color,border-color,translate,scale] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-105 hover:border-transparent hover:text-ink-900"
                     >
-                      <Icon className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+                      <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
                     </a>
                   </li>
                 );
@@ -137,13 +148,13 @@ export function Footer() {
             {/* Matches the social buttons: a bordered pill that fills with the gradient */}
             <Link
               href="/contact"
-              className="btn-gradient group/btn relative isolate mt-5 inline-flex h-11 items-center gap-2.5 rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] px-5 text-[1rem] font-medium text-white transition-colors duration-300 hover:border-transparent hover:text-ink-900"
+              className="btn-gradient group/btn relative isolate mt-5 inline-flex h-10 items-center gap-2 rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] px-4 text-[0.9375rem] font-medium text-white transition-colors duration-300 hover:border-transparent hover:text-ink-900"
             >
               Start a project
               <ArrowIcon />
             </Link>
-          </div>
-        </div>
+          </RevealItem>
+        </RevealGroup>
 
         {/*
          * Oversized wordmark drawn as SVG rather than text.
@@ -157,7 +168,10 @@ export function Footer() {
          * stops inside each fill. That way both the resting and the hover
          * colour fade out identically, and each fill is free to run its
          * gradient across the word instead of spending it on the fade.
+         *
+         * It rises in slowly, last, as the page's closing gesture.
          */}
+        <Reveal distance={40} duration={1.3} delay={0.15}>
         <div
           aria-hidden="true"
           className="group mx-auto w-[70%] select-none md:w-[50%]"
@@ -239,6 +253,7 @@ export function Footer() {
             </text>
           </svg>
         </div>
+        </Reveal>
 
         {/*
          * Three columns rather than a flex row: the empty first column is

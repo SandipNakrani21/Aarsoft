@@ -2,7 +2,7 @@ import { testimonials } from "@/data/company";
 import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
-import { RevealGroup, RevealItem, Reveal } from "@/components/ui/Reveal";
+import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 
 export function Testimonials() {
   return (
@@ -26,10 +26,10 @@ export function Testimonials() {
         >
           {testimonials.map((t, i) => (
             <RevealItem as="li" key={i}>
-              <figure className="card-box flex flex-col p-7">
+              <figure className="card-box group flex flex-col p-7">
                 <span
                   aria-hidden="true"
-                  className="font-display text-5xl leading-none text-lavender"
+                  className="inline-block origin-bottom-left font-display text-5xl leading-none text-lavender transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-0.5 group-hover:scale-110"
                 >
                   &ldquo;
                 </span>
@@ -43,7 +43,7 @@ export function Testimonials() {
                 <figcaption className="mt-7 flex items-center gap-3.5 border-t border-ink-100 pt-6">
                   <span
                     aria-hidden="true"
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-[0.8125rem] font-medium text-ink-900"
+                    className="card-icon flex h-10 w-10 items-center justify-center rounded-full text-[0.8125rem] font-medium text-ink-900"
                     style={{ background: "var(--gradient-primary)" }}
                   >
                     {t.initials}

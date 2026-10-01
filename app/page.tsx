@@ -9,7 +9,6 @@ import { IndustriesSection } from "@/components/sections/IndustriesSection";
 import { WorkMarquee } from "@/components/sections/WorkMarquee";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { AiSection } from "@/components/sections/AiSection";
-import { StatsSection } from "@/components/sections/StatsSection";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { buildMetadata } from "@/lib/seo";
@@ -36,7 +35,6 @@ export default function HomePage() {
       <WorkMarquee />
       <ProcessSection />
       <AiSection />
-      <StatsSection />
       <Testimonials />
       <CtaSection />
     </>

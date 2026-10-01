@@ -12,7 +12,7 @@ type Size = "md" | "lg";
  * behind the content without needing a z-index on every child.
  */
 const base =
-  "btn-gradient group/btn relative isolate inline-flex items-center justify-center gap-2 font-medium " +
+  "btn-gradient group/btn relative isolate inline-flex items-center justify-center gap-2.5 font-medium " +
   "rounded-[var(--radius-sm)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] " +
   "whitespace-nowrap select-none disabled:opacity-50 disabled:pointer-events-none " +
   "hover:-translate-y-0.5";
@@ -31,8 +31,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  md: "h-11 px-8 text-[1.0625rem]",
-  lg: "h-[52px] px-12 text-[1.1875rem]",
+  md: "h-[52px] px-10 text-[1.125rem]",
+  lg: "h-[60px] px-14 text-[1.25rem]",
 };
 
 type BaseProps = {
@@ -98,7 +98,7 @@ export function ArrowIcon({ className }: { className?: string }) {
       fill="none"
       aria-hidden="true"
       className={cn(
-        "h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/btn:translate-x-1",
+        "h-[18px] w-[18px] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/btn:translate-x-1",
         className,
       )}
     >

@@ -1,4 +1,5 @@
 import { solutions } from "@/data/solutions";
+import { slugify } from "@/lib/utils";
 import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
@@ -30,9 +31,12 @@ export function SolutionsSection({ limit }: { limit?: number }) {
             const Icon = solution.icon;
             return (
               <RevealItem as="li" key={solution.title}>
-                <article className="card-box group flex flex-col p-7">
+                <article
+                  id={slugify(solution.title)}
+                  className="card-box card-box-lift group flex scroll-mt-32 flex-col p-7"
+                >
                   <span
-                    className="inline-flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)]"
+                    className="card-icon inline-flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)]"
                     style={{ background: "var(--color-lavender-soft)" }}
                   >
                     <Icon
@@ -42,7 +46,7 @@ export function SolutionsSection({ limit }: { limit?: number }) {
                     />
                   </span>
 
-                  <h3 className="mt-6 font-display text-2xl tracking-[-0.025em] text-ink-900">
+                  <h3 className="mt-6 font-display text-2xl tracking-[-0.025em] text-ink-900 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
                     {solution.title}
                   </h3>
 

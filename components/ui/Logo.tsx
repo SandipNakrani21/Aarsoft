@@ -15,7 +15,15 @@ import { cn } from "@/lib/utils";
 const ART = {
   wordmark: { src: "/aarsoft-logo-wordmark.webp", width: 1931, height: 573 },
   full: { src: "/aarsoft-logo.webp", width: 1931, height: 669 },
+  /*
+   * The header lockup: "TECHNOLOGIES" set solid in Deep Black. Its twin
+   * carries the same word in white for when the bar sits over a dark
+   * section, where black would vanish.
+   */
+  header: { src: "/aarsoft-logo-header.webp", width: 1916, height: 666 },
 } as const;
+
+const HEADER_ON_DARK = "/aarsoft-logo-header-light.webp";
 
 /**
  * Brand lockup, linked home.
@@ -29,7 +37,10 @@ export function Logo({
   imageClassName,
   href = "/",
   priority = false,
+  onDark = false,
 }: {
+  /** Header lockup only: swap "TECHNOLOGIES" to white over a dark ground. */
+  onDark?: boolean;
   /** `full` keeps the tagline. Use it only where there is room to read it. */
   variant?: keyof typeof ART;
   className?: string;
@@ -39,6 +50,44 @@ export function Logo({
   priority?: boolean;
 }) {
   const art = ART[variant];
+
+  const imageClass = cn(
+    /* object-contain keeps the artwork's shape if a narrow column clamps the width. */
+    "w-auto max-w-full object-contain transition-[scale,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]",
+    imageClassName ?? "h-8",
+  );
+
+  /*
+   * The header's two versions are stacked and cross-faded rather than
+   * swapped by `src`, so the change of ground never shows a blank frame
+   * while the other file loads.
+   */
+  if (variant === "header") {
+    return (
+      <Link
+        href={href}
+        className={cn("group relative inline-flex items-center rounded-[var(--radius-sm)]", className)}
+        aria-label="Aarsoft Technologies — home"
+      >
+        <Image
+          src={art.src}
+          width={art.width}
+          height={art.height}
+          priority={priority}
+          alt=""
+          className={cn(imageClass, onDark && "opacity-0")}
+        />
+        <Image
+          src={HEADER_ON_DARK}
+          width={art.width}
+          height={art.height}
+          priority={priority}
+          alt=""
+          className={cn(imageClass, "absolute left-0 top-1/2 -translate-y-1/2", !onDark && "opacity-0")}
+        />
+      </Link>
+    );
+  }
 
   return (
     <Link

@@ -32,6 +32,12 @@
   --gradient-dark: linear-gradient(135deg, #0d0c15 0%, #c1b8ff 100%);
   --gradient-lavender-fade: linear-gradient(180deg, #c1b8ff 0%, #ffffff 100%);
   --gradient-gold-fade: linear-gradient(180deg, #fed97b 0%, #ffffff 100%);
+  /*
+   * The primary gradient taken down in lightness, same two hues. For
+   * gradient text on light grounds, where the full-strength lavender and
+   * gold wash out against white and pale glass.
+   */
+  --gradient-primary-deep: linear-gradient(135deg, #5443d6 0%, #a36a00 100%);
 
   /* Radii */
   --radius-sm: 8px;
@@ -310,23 +316,112 @@
   }
 
   /*
-   * Shared button hover: the brand gradient fades in on a layer behind the
-   * label. Written as plain CSS because Tailwind variants such as `before:`
-   * cannot target a hand-authored utility class.
+   * CTA panel shape: small radius on the top-left and bottom-right corners,
+   * a sweeping radius on the top-right and bottom-left. The two sweeping
+   * corners can be traced by offset gradient frames sitting behind the panel.
+   * `.cta-shape-sharp` squares off the two small corners entirely.
    */
-  .btn-gradient::before {
+  .cta-shape {
+    --cta-r: 2.5rem;
+    --cta-corner: var(--radius-hero);
+    border-radius: var(--cta-corner) var(--cta-r) var(--cta-corner) var(--cta-r);
+  }
+  .cta-shape-sharp {
+    --cta-corner: 0px;
+  }
+  @media (min-width: 768px) {
+    .cta-shape {
+      --cta-r: 5rem;
+    }
+  }
+
+  .cta-frame {
+    --cta-r: 2.5rem;
+    --cta-offset: 10px;
+    --cta-stroke: 8px;
+    position: absolute;
+    pointer-events: none;
+    background: var(--gradient-primary) border-box;
+    border: var(--cta-stroke) solid transparent;
+    -webkit-mask:
+      linear-gradient(#000 0 0) padding-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  @media (min-width: 768px) {
+    .cta-frame {
+      --cta-r: 5rem;
+      --cta-offset: 14px;
+      --cta-stroke: 10px;
+    }
+  }
+  .cta-frame-tr {
+    top: calc(var(--cta-offset) * -1);
+    right: calc(var(--cta-offset) * -1);
+    width: 32%;
+    height: 72%;
+    border-left-width: 0;
+    border-bottom-width: 0;
+    border-top-right-radius: calc(var(--cta-r) + var(--cta-offset));
+  }
+  .cta-frame-bl {
+    bottom: calc(var(--cta-offset) * -1);
+    left: calc(var(--cta-offset) * -1);
+    width: 22%;
+    height: 78%;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-left-radius: calc(var(--cta-r) + var(--cta-offset));
+  }
+
+  /*
+   * Shared button hover: a split wipe. The brand gradient slides in as two
+   * half-height panels, the top one from the left and the bottom one from
+   * the right, meeting to fill the button while the label flips colour. On
+   * leaving, each panel slides back out the way it came.
+   *
+   * Each panel paints the full-height gradient (sized 100% x 200%) anchored
+   * to its own edge, so the two halves join into one continuous gradient.
+   * Written as plain CSS because Tailwind variants such as `before:` cannot
+   * target a hand-authored utility class.
+   */
+  .btn-gradient,
+  .btn-split {
+    overflow: hidden;
+  }
+  .btn-gradient::before,
+  .btn-gradient::after,
+  .btn-split::before,
+  .btn-split::after {
     content: "";
     position: absolute;
-    inset: 0;
+    left: 0;
     z-index: -1;
-    border-radius: inherit;
+    width: 100%;
+    height: 50%;
     background: var(--gradient-primary);
-    opacity: 0;
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    background-size: 100% 200%;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-gradient::before,
+  .btn-split::before {
+    top: 0;
+    background-position: top;
+    transform: translateX(-101%);
+  }
+  .btn-gradient::after,
+  .btn-split::after {
+    bottom: 0;
+    background-position: bottom;
+    transform: translateX(101%);
+    transition-delay: 0.05s;
   }
   .btn-gradient:hover::before,
-  .btn-gradient:focus-visible::before {
-    opacity: 1;
+  .btn-gradient:hover::after,
+  .btn-gradient:focus-visible::before,
+  .btn-gradient:focus-visible::after {
+    transform: translateX(0);
   }
   .bg-gradient-dark {
     background: var(--gradient-dark);
@@ -432,6 +527,193 @@
     background-size: 100% 100%;
   }
 
+  /*
+   * Pointer spotlight: a soft lavender glow centred on the pointer, fed by
+   * the `--mx` / `--my` properties PointerEffects writes on desktop. Without
+   * those (touch, keyboard) it sits at the top centre of the card.
+   *
+   * `isolation` makes the card its own stacking context, which is what lets
+   * a z-index of -1 paint the glow above the card's background but beneath
+   * its text — no wrapper element needed.
+   */
+  .card-box {
+    isolation: isolate;
+  }
+  .card-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      340px circle at var(--mx, 50%) var(--my, 0%),
+      rgba(193, 184, 255, 0.24),
+      rgba(254, 217, 123, 0.06) 45%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+  .card-box:hover::before,
+  .card-box:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Deeper lift for the cards that act as the page's main objects. */
+  .card-box-lift:hover,
+  .card-box-lift:focus-within {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /*
+   * Card icons answer the hover with a small, precise movement: a few
+   * pixels up, a slight turn and a touch larger. Never a spin or a bounce.
+   */
+  .card-icon {
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      color 0.3s ease,
+      background-color 0.3s ease;
+  }
+  .card-box:hover .card-icon,
+  .card-box:focus-within .card-icon {
+    transform: translateY(-3px) rotate(-4deg) scale(1.05);
+  }
+
+  /*
+   * "Why Aarsoft" capability system (WhyAarsoftSystem.tsx).
+   *
+   * The stage holds the cards, the connector lines and the core. On a
+   * desktop screen tall enough to show the whole grid, the stage sticks
+   * under the nav while a spacer beneath it scrolls past, which is the short
+   * hold during which the cards activate. Everywhere else it scrolls
+   * normally.
+   */
+  .why-stage {
+    position: relative;
+  }
+  .why-hold {
+    height: 0;
+  }
+  @media (min-width: 1024px) and (min-height: 860px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .why-stage {
+      position: sticky;
+      top: calc(var(--nav-h) + 0.5rem);
+    }
+    .why-hold {
+      height: 80vh;
+    }
+  }
+
+  /* Fine brand grid under a soft lavender light, faded out at the edges. */
+  .why-backdrop {
+    background-image:
+      radial-gradient(ellipse 50% 45% at 50% 50%, rgba(193, 184, 255, 0.22), transparent 70%),
+      linear-gradient(to right, rgba(13, 12, 21, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(13, 12, 21, 0.05) 1px, transparent 1px);
+    background-size: 100% 100%, 56px 56px, 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 50%, #000 30%, transparent 80%);
+    mask-image: radial-gradient(ellipse 60% 55% at 50% 50%, #000 30%, transparent 80%);
+  }
+
+  /*
+   * Capability labels. Stacked below lg; from lg each one is placed around
+   * the circle by the custom properties set inline (position, the corner it
+   * hangs from, and which way its text aligns).
+   */
+  @media (min-width: 1024px) {
+    .why-item {
+      position: absolute;
+      left: var(--lx);
+      top: var(--ly);
+      width: max-content;
+      max-width: 20rem;
+      text-align: var(--la);
+      translate: var(--lt);
+    }
+  }
+
+  /*
+   * The lit capability's title is underlined with the brand gradient, drawn
+   * in from the left. The title itself stays in ink so it reads on the light
+   * ground; an inline background also follows the text when it wraps.
+   */
+  .why-title-text {
+    padding-bottom: 4px;
+    background-image: var(--gradient-primary);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 2px;
+    transition: background-size 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .why-title-lit .why-title-text {
+    background-size: 100% 2px;
+  }
+
+  /*
+   * Process badges. The orbit group turns about the badge centre (100,100
+   * in the SVG's own units); the disc lifts and glows while its step is
+   * hovered, and the title and number pick up the brand gradient.
+   */
+  .process-orbit {
+    transform-origin: 100px 100px;
+    animation: process-orbit 22s linear infinite;
+  }
+  .process-orbit-reverse {
+    animation-direction: reverse;
+  }
+  .process-disc {
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .process-step:hover .process-disc {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 18px 36px -12px rgba(193, 184, 255, 0.85);
+  }
+  .process-title {
+    transition: color 0.3s ease;
+  }
+  .process-step:hover .process-title {
+    background: var(--gradient-primary-deep);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .process-stem {
+    background: linear-gradient(to bottom, var(--color-lavender), var(--color-gold));
+  }
+  .process-pill {
+    border: 1px solid var(--color-ink-200);
+    background-color: var(--color-white);
+    color: var(--color-ink-700);
+    transition:
+      background-color 0.35s ease,
+      border-color 0.35s ease,
+      color 0.35s ease;
+  }
+  .process-step:hover .process-pill {
+    border-color: transparent;
+    background: var(--gradient-primary);
+    color: var(--color-ink-900);
+  }
+
+  /* Technology chips: lift and pick up the lavender tint individually. */
+  .chip-rise {
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  .chip-rise:hover {
+    transform: translateY(-2px);
+    background-color: var(--color-lavender-soft);
+    color: var(--color-ink-900);
+  }
+
   /* Dark-surface variant of the same card. */
   .card-box-dark {
     border-color: rgba(193, 184, 255, 0.16);
@@ -484,6 +766,14 @@
     color: transparent;
   }
 
+  /* Light-ground variant: the deeper gradient keeps the hovered word legible. */
+  .link-gradient-deep:hover,
+  .link-gradient-deep:focus-visible {
+    background: var(--gradient-primary-deep);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
   /*
    * Footer links: the label lifts and a gradient rule draws in beneath it.
    * The rule is a pseudo-element so it can animate from the left without
@@ -530,6 +820,15 @@
   .link-rise:focus-visible::after {
     transform: scaleX(1);
   }
+  /*
+   * Keeps the weight on hover. For columns that size to their text (the
+   * footer), so no bold width has to be reserved and the gaps between
+   * columns measure true to the visible words.
+   */
+  .link-rise-flat:hover,
+  .link-rise-flat:focus-visible {
+    font-weight: inherit;
+  }
   .hairline-dark {
     border: 1px solid rgba(193, 184, 255, 0.16);
   }
@@ -547,14 +846,29 @@
   }
 
   /*
-   * Hero headline. Sized so each explicit line fits on one row at every
-   * breakpoint — the masked line reveal only reads correctly when a line
-   * does not wrap inside its own clipping box.
+   * Hero headline. Sized so each of its two lines ("Engineering Digital
+   * Products" / "Built for What's Next.") holds one row from tablet up. On
+   * phones a line may wrap inside its mask, which the reveal still handles:
+   * the wrapped block rises as one.
    */
   .hero-display {
-    font-size: clamp(2.75rem, 6.2vw, 6rem);
-    line-height: 1;
-    letter-spacing: -0.04em;
+    font-size: clamp(2.375rem, 4.6vw, 4.75rem);
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+  }
+
+  /*
+   * Gradient-filled text: the highlighted headline line (TextReveal's `fill`).
+   * The descender padding keeps the clip from cutting off the bottoms of
+   * letters like "g" and "y".
+   */
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    padding-bottom: 0.08em;
   }
   .fluid-h2 {
     font-size: clamp(1.875rem, 3.6vw, 3.25rem);
@@ -594,6 +908,297 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /*
+   * Technology card. The icon hangs from the top edge as a tab, and a notch
+   * is cut from the bottom edge for the "View more" pill, which sits in the
+   * shell beside the card rather than inside it. The notch is a mask, so the
+   * shell's drop-shadow follows the cut shape. On hover the card turns to the
+   * dark brand surface.
+   *
+   * Notch geometry (px): depth 54, opening 164, fillets 16, corners 18, with
+   * 36 of card left to its right. The pill is 148 x 46, 8 in from each side.
+   */
+  .tech-shell {
+    position: relative;
+    height: 100%;
+    filter: drop-shadow(0 1px 1px rgba(13, 12, 21, 0.05)) drop-shadow(0 8px 16px rgba(13, 12, 21, 0.06));
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-shell:hover,
+  .tech-shell:focus-within {
+    transform: translateY(-6px);
+    filter: drop-shadow(0 2px 3px rgba(13, 12, 21, 0.08)) drop-shadow(0 24px 32px rgba(13, 12, 21, 0.18));
+  }
+
+  .tech-card {
+    position: relative;
+    isolation: isolate;
+    height: 100%;
+    border-radius: 28px;
+    background: linear-gradient(
+      115deg,
+      var(--color-gray) 0%,
+      var(--color-white) 52%,
+      var(--color-lavender-faint) 82%,
+      var(--color-gold-soft) 100%
+    );
+    -webkit-mask-image:
+      linear-gradient(#000 0 0), linear-gradient(#000 0 0),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='54'%3E%3Cpath d='M0 0H232V54H196A16 16 0 0 1 180 38V18A18 18 0 0 0 162 0H34A18 18 0 0 0 16 18V38A16 16 0 0 1 0 54Z'/%3E%3C/svg%3E");
+    mask-image:
+      linear-gradient(#000 0 0), linear-gradient(#000 0 0),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='54'%3E%3Cpath d='M0 0H232V54H196A16 16 0 0 1 180 38V18A18 18 0 0 0 162 0H34A18 18 0 0 0 16 18V38A16 16 0 0 1 0 54Z'/%3E%3C/svg%3E");
+    -webkit-mask-size: 100% calc(100% - 53px), calc(100% - 231px) 54px, 232px 54px;
+    mask-size: 100% calc(100% - 53px), calc(100% - 231px) 54px, 232px 54px;
+    -webkit-mask-position: top left, bottom left, bottom right;
+    mask-position: top left, bottom left, bottom right;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  /* Dark brand surface, faded in on hover. */
+  .tech-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(120% 70% at 100% 100%, rgba(193, 184, 255, 0.34), transparent 60%),
+      radial-gradient(60% 40% at 0% 100%, rgba(254, 217, 123, 0.14), transparent 70%),
+      var(--color-black);
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-shell:hover .tech-card::before,
+  .tech-shell:focus-within .tech-card::before {
+    opacity: 1;
+  }
+
+  /* Icon tab: flush with the top edge, joined to it by two small fillets. */
+  .tech-tab {
+    position: absolute;
+    top: 0;
+    left: 1.75rem;
+    display: flex;
+    width: 60px;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 16px 16px;
+    /*
+     * At rest the tab is Deep Black with a white icon, anchoring the light
+     * card. On hover the brand gradient fills it and the icon turns dark,
+     * matching the gradient the title picks up.
+     */
+    background-color: var(--color-black);
+    isolation: isolate;
+  }
+  .tech-tab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-lavender) 0%, var(--color-gold) 100%);
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-tab-icon {
+    color: var(--color-white);
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-tab-fillet {
+    position: absolute;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    background-color: var(--color-black);
+    transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-tab-fillet-l {
+    left: -12px;
+    -webkit-mask: radial-gradient(circle at 0 100%, transparent 11.5px, #000 12px);
+    mask: radial-gradient(circle at 0 100%, transparent 11.5px, #000 12px);
+  }
+  .tech-tab-fillet-r {
+    right: -12px;
+    -webkit-mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
+    mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
+  }
+  .tech-shell:hover .tech-tab::before,
+  .tech-shell:focus-within .tech-tab::before {
+    opacity: 1;
+  }
+  .tech-shell:hover .tech-tab-icon,
+  .tech-shell:focus-within .tech-tab-icon {
+    color: var(--color-ink-900);
+  }
+  /* Each fillet takes the gradient end it touches. */
+  .tech-shell:hover .tech-tab-fillet-l,
+  .tech-shell:focus-within .tech-tab-fillet-l {
+    background-color: var(--color-lavender);
+  }
+  .tech-shell:hover .tech-tab-fillet-r,
+  .tech-shell:focus-within .tech-tab-fillet-r {
+    background-color: var(--color-gold);
+  }
+
+  .tech-title,
+  .tech-summary {
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-shell:hover .tech-title,
+  .tech-shell:focus-within .tech-title {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .tech-shell:hover .tech-summary,
+  .tech-shell:focus-within .tech-summary {
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  /* Technology chips. Logos keep a white tile so they read on either surface. */
+  .tech-chip {
+    border: 1px solid var(--color-ink-100);
+    background-color: var(--color-white);
+    color: var(--color-ink-700);
+    transition:
+      background-color 0.45s ease,
+      border-color 0.45s ease,
+      color 0.45s ease;
+  }
+  .tech-chip-glyph {
+    color: var(--color-ink-700);
+  }
+  .tech-shell:hover .tech-chip,
+  .tech-shell:focus-within .tech-chip {
+    border-color: rgba(193, 184, 255, 0.18);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* The pill that sits in the notch. */
+  .tech-more {
+    position: absolute;
+    right: 60px;
+    bottom: 0;
+    width: 148px;
+    height: 46px;
+    isolation: isolate;
+    /* White at rest; the gradient wipes in on hover. */
+    border: 1px solid var(--color-ink-100);
+    background-color: var(--color-white);
+    color: var(--color-ink-900);
+    transition:
+      color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Same split wipe as the shared buttons, run by hovering the whole card. */
+  .tech-shell:hover .tech-more::before,
+  .tech-shell:hover .tech-more::after,
+  .tech-more:focus-visible::before,
+  .tech-more:focus-visible::after {
+    transform: translateX(0);
+  }
+  .tech-shell:hover .tech-more,
+  .tech-more:focus-visible {
+    border-color: transparent;
+    color: var(--color-ink-900);
+  }
+  .tech-more svg {
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-more:hover svg,
+  .tech-more:focus-visible svg {
+    transform: translateX(3px);
+  }
+
+  /*
+   * Inverted colour scheme for the technology cards, active only inside
+   * `.tech-invert`. On hover the card fills with the brand gradient instead
+   * of going black, and the icon tab and "View more" go black. Removing the
+   * class in TechStack.tsx falls back to the dark-card hover above.
+   */
+  /*
+   * At rest the icon tab carries the brand gradient and "View more" is
+   * white; the hover rules below turn both black as the card fills with
+   * gradient.
+   */
+  .tech-invert .tech-tab::before {
+    opacity: 1;
+  }
+  .tech-invert .tech-tab-icon {
+    color: var(--color-ink-900);
+  }
+  .tech-invert .tech-tab-fillet-l {
+    background-color: var(--color-lavender);
+  }
+  .tech-invert .tech-tab-fillet-r {
+    background-color: var(--color-gold);
+  }
+  /* "View more" stays white at rest; only the icon tab carries the gradient. */
+  .tech-invert .tech-more {
+    border-color: var(--color-ink-100);
+    background: var(--color-white);
+    color: var(--color-ink-900);
+  }
+
+  .tech-invert .tech-shell:hover .tech-card::before,
+  .tech-invert .tech-shell:focus-within .tech-card::before {
+    background:
+      radial-gradient(120% 70% at 100% 100%, rgba(255, 255, 255, 0.28), transparent 60%),
+      var(--gradient-primary);
+  }
+  .tech-invert .tech-shell:hover .tech-tab::before,
+  .tech-invert .tech-shell:focus-within .tech-tab::before {
+    opacity: 0;
+  }
+  .tech-invert .tech-shell:hover .tech-tab-icon,
+  .tech-invert .tech-shell:focus-within .tech-tab-icon {
+    color: var(--color-white);
+  }
+  .tech-invert .tech-shell:hover .tech-tab-fillet-l,
+  .tech-invert .tech-shell:focus-within .tech-tab-fillet-l,
+  .tech-invert .tech-shell:hover .tech-tab-fillet-r,
+  .tech-invert .tech-shell:focus-within .tech-tab-fillet-r {
+    background-color: var(--color-black);
+  }
+  /* On the light gradient the copy stays dark, so the title drops its gradient fill. */
+  .tech-invert .tech-shell:hover .tech-title,
+  .tech-invert .tech-shell:focus-within .tech-title {
+    background: none;
+    -webkit-text-fill-color: var(--color-ink-900);
+    color: var(--color-ink-900);
+  }
+  .tech-invert .tech-shell:hover .tech-summary,
+  .tech-invert .tech-shell:focus-within .tech-summary {
+    color: var(--color-ink-700);
+  }
+  .tech-invert .tech-shell:hover .tech-chip,
+  .tech-invert .tech-shell:focus-within .tech-chip {
+    border-color: rgba(13, 12, 21, 0.08);
+    background-color: rgba(255, 255, 255, 0.7);
+    color: var(--color-ink-900);
+  }
+  .tech-invert .tech-shell:hover .tech-chip-glyph,
+  .tech-invert .tech-shell:focus-within .tech-chip-glyph {
+    color: var(--color-ink-900);
+  }
+  /* "View more" wipes to black rather than to the gradient. */
+  .tech-invert .tech-more::before,
+  .tech-invert .tech-more::after {
+    background: var(--color-black);
+  }
+  .tech-invert .tech-shell:hover .tech-more,
+  .tech-invert .tech-more:focus-visible {
+    color: var(--color-white);
   }
 }
 
@@ -669,6 +1274,65 @@
   animation: aurora 22s ease-in-out infinite;
 }
 
+/* The hero artwork settles in behind the headline rather than being there at first paint. */
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+.animate-backdrop-in {
+  animation: backdrop-in 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+/* A point of light rising slowly and fading at both ends of its path. */
+@keyframes particle {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+  }
+  20%,
+  70% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(12px, -220px, 0);
+  }
+}
+.animate-particle {
+  opacity: 0;
+  animation: particle 20s linear infinite;
+}
+
+/* Soft expanding ring on the active delivery stage in the hero panel. */
+@keyframes stage-ping {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  80%,
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+.animate-stage-ping {
+  animation: stage-ping 2.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/*
+ * Phones get fewer simultaneous loops: the travelling pulses along the
+ * network links stop, while the slower node breathing stays so the artwork
+ * is still alive.
+ */
+@media (max-width: 767px) {
+  .node-flow {
+    animation: none !important;
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -684,7 +1348,565 @@
   .animate-marquee,
   .animate-marquee-x,
   .animate-float-slow,
-  .animate-aurora {
+  .animate-aurora,
+  .animate-backdrop-in,
+  .animate-particle,
+  .animate-stage-ping {
     animation: none !important;
+  }
+  .animate-particle,
+  .animate-stage-ping {
+    display: none;
+  }
+  .card-box:hover .card-icon,
+  .card-box:focus-within .card-icon,
+  .chip-rise:hover,
+  .tech-shell:hover,
+  .tech-shell:focus-within {
+    transform: none;
+  }
+  /* Buttons still fill on hover, but without the sliding panels. */
+  .btn-gradient::before,
+  .btn-gradient::after,
+  .btn-split::before,
+  .btn-split::after {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   INTRO LOADER — first visit only (components/layout/IntroLoader.tsx)
+   ========================================================================== */
+
+.intro-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  /*
+   * Failsafe for when script never runs: after 3.5s the loader hides itself
+   * and stops catching clicks, so the page can never be left behind it.
+   * The script normally removes it well before this fires.
+   */
+  animation: intro-failsafe 0.01s linear 3.5s forwards;
+}
+@keyframes intro-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* The black screen is two halves, so it can split open on exit. */
+.intro-half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;
+  background-color: var(--color-black);
+  background-image:
+    linear-gradient(to right, rgba(193, 184, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(193, 184, 255, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.15s;
+}
+.intro-half-top {
+  top: 0;
+  background-position: 0 0;
+}
+.intro-half-bottom {
+  bottom: 0;
+  background-position: 0 100%;
+}
+.intro-loader[data-state="exit"] {
+  pointer-events: none;
+}
+.intro-loader[data-state="exit"] .intro-half-top {
+  transform: translateY(-100%);
+}
+.intro-loader[data-state="exit"] .intro-half-bottom {
+  transform: translateY(100%);
+}
+
+/* A gradient seam that flashes across the split line as it opens. */
+.intro-seam {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 24px 2px rgba(193, 184, 255, 0.55);
+  transform: scaleX(0);
+  opacity: 0;
+}
+.intro-loader[data-state="exit"] .intro-seam {
+  animation: intro-seam 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes intro-seam {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  45% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+.intro-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-inline: 1.5rem;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.intro-loader[data-state="exit"] .intro-center {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+/* The logo "compiles" in: revealed left to right behind a scan line. */
+.intro-logo {
+  position: relative;
+  clip-path: inset(0 100% 0 0);
+  animation: intro-reveal 1s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
+}
+@keyframes intro-reveal {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.intro-scan {
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: 0;
+  width: 2px;
+  background: var(--gradient-primary);
+  box-shadow: 0 0 18px 3px rgba(193, 184, 255, 0.6);
+  animation: intro-scan 1s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
+}
+@keyframes intro-scan {
+  0% {
+    left: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+.intro-meta {
+  display: flex;
+  width: 100%;
+  min-width: 14rem;
+  justify-content: space-between;
+  margin-top: 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-300);
+}
+.intro-bar {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(193, 184, 255, 0.14);
+}
+.intro-bar > span {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Reduced motion: no scan, no split — a short fade instead. */
+@media (prefers-reduced-motion: reduce) {
+  .intro-logo {
+    clip-path: none;
+    animation: none;
+  }
+  .intro-scan,
+  .intro-seam {
+    display: none;
+  }
+  .intro-loader[data-state="exit"] {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .intro-loader[data-state="exit"] .intro-half-top,
+  .intro-loader[data-state="exit"] .intro-half-bottom {
+    transform: none;
+  }
+}
+
+/* Process badges: the outer ring of arcs and dots orbits slowly. */
+@keyframes process-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .process-orbit {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   HERO ARTWORK — motion layered onto the background image
+   (components/visuals/HeroBackground.tsx)
+   ========================================================================== */
+
+/*
+ * The stage covers its container the way object-cover would, but as a real
+ * box with the artwork's own aspect ratio, so the SVG overlay drawn in the
+ * image's pixel space lands exactly on the image at every size. It is 6%
+ * oversized so the drift and pointer depth never expose an edge. Narrow
+ * screens anchor it towards the right, where the artwork's detail sits.
+ */
+.hero-stage {
+  width: calc(max(100cqw, 100cqh * 1672 / 941) * 1.06);
+  aspect-ratio: 1672 / 941;
+  top: 50%;
+  left: 72%;
+  translate: -72% -50%;
+}
+@media (min-width: 768px) {
+  .hero-stage {
+    left: 50%;
+    translate: -50% -50%;
+  }
+}
+
+/* A slow camera move across the artwork: in, drifting, and back. */
+.hero-drift {
+  transform-origin: 62% 46%;
+  animation: hero-drift 32s ease-in-out infinite alternate;
+}
+@keyframes hero-drift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.06) translate3d(-1.2%, 0.8%, 0);
+  }
+}
+
+/* Halos breathing out of the gold nodes. */
+.hero-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: hero-halo 5s ease-in-out infinite;
+}
+@keyframes hero-halo {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  40% {
+    opacity: 0.32;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Small points twinkling. */
+.hero-twinkle {
+  animation: hero-twinkle 3.6s ease-in-out infinite;
+}
+@keyframes hero-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* A gold pulse travelling each route (paths use pathLength="1000"). */
+.hero-flow {
+  animation-name: hero-flow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 0 4px rgba(254, 217, 123, 0.9));
+}
+@keyframes hero-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+/* A soft diagonal band of light that glides across every few seconds. */
+.hero-sweep {
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(193, 184, 255, 0.07) 40%,
+    rgba(254, 217, 123, 0.06) 55%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  animation: hero-sweep 12s cubic-bezier(0.45, 0, 0.55, 1) 2.5s infinite;
+  transform: translateX(0);
+}
+@keyframes hero-sweep {
+  0% {
+    transform: translateX(0) skewX(-12deg);
+  }
+  45%,
+  100% {
+    transform: translateX(320%) skewX(-12deg);
+  }
+}
+
+/* Phones: keep the breathing and twinkling, drop the sweep. */
+@media (max-width: 767px) {
+  .hero-sweep {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-drift,
+  .hero-halo,
+  .hero-twinkle,
+  .hero-flow,
+  .hero-sweep {
+    animation: none !important;
+  }
+  .hero-sweep,
+  .hero-flow {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   SERVICE CARDS — dark tinted cards with an outlined corner number
+   (components/sections/ServicesGrid.tsx)
+   ========================================================================== */
+
+.svc-card {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 2.25rem 1.75rem 1.75rem;
+  border: 1px solid rgba(193, 184, 255, 0.12);
+  background:
+    linear-gradient(160deg, rgba(193, 184, 255, 0.1) 0%, rgba(193, 184, 255, 0.04) 100%),
+    rgba(13, 12, 21, 0.6);
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.5s ease;
+}
+.svc-card:hover,
+.svc-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: rgba(193, 184, 255, 0.38);
+  background-color: rgba(30, 27, 48, 0.85);
+  box-shadow:
+    0 24px 48px -20px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(254, 217, 123, 0.08),
+    0 18px 50px -24px rgba(193, 184, 255, 0.45);
+}
+
+/* The big outlined number, riding the card's top-right corner. */
+.svc-number {
+  position: absolute;
+  top: 0;
+  right: 1.25rem;
+  width: 7.25rem;
+  height: auto;
+  overflow: visible;
+  translate: 0 -58%;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.svc-number-text {
+  font-family: var(--font-body), sans-serif;
+  font-size: 100px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  fill-opacity: 0;
+  stroke-opacity: 0.7;
+  transition:
+    fill-opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    stroke-opacity 0.6s ease;
+}
+/* On hover the outline fills in softly and the number lifts a touch. */
+.svc-card:hover .svc-number,
+.svc-card:focus-visible .svc-number {
+  transform: translateY(-4px);
+}
+.svc-card:hover .svc-number-text,
+.svc-card:focus-visible .svc-number-text {
+  fill-opacity: 0.22;
+  stroke-opacity: 1;
+}
+
+.svc-icon {
+  display: flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(193, 184, 255, 0.12);
+  color: var(--color-lavender);
+  transition:
+    background 0.45s ease,
+    color 0.45s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.svc-card:hover .svc-icon,
+.svc-card:focus-visible .svc-icon {
+  background: var(--gradient-primary);
+  color: var(--color-ink-900);
+  transform: translateY(-2px) rotate(-6deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svc-card:hover,
+  .svc-card:focus-visible,
+  .svc-card:hover .svc-number,
+  .svc-card:hover .svc-icon {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   RETURNING VISITS — the intro plays once per browser (lib/visit.ts)
+   ========================================================================== */
+
+/* Flagged in <head> before first paint, so the intro never shows again. */
+html[data-visited] .intro-loader {
+  display: none !important;
+}
+
+/*
+ * Route loader (RouteLoader.tsx): the Aarsoft mark in a turning gradient
+ * ring on a light screen, for refreshes and in-site page changes.
+ *
+ * The "boot" phase is server-rendered for everyone but only shown to
+ * returning visitors; first-time visitors get the intro instead. A CSS
+ * failsafe hides the boot cover if script never runs.
+ */
+.route-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: none;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+html[data-visited] .route-loader[data-phase="boot"],
+.route-loader[data-phase="nav"],
+.route-loader[data-phase="leaving"] {
+  display: grid;
+}
+html[data-visited] .route-loader[data-phase="boot"] {
+  animation: route-loader-failsafe 0.01s linear 3s forwards;
+}
+/* A click fades the cover in quickly rather than snapping it on. */
+.route-loader[data-phase="nav"] {
+  animation: route-loader-in 0.2s ease-out both;
+}
+.route-loader[data-phase="leaving"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.route-loader-mark {
+  position: relative;
+  display: grid;
+  width: 88px;
+  height: 88px;
+  place-items: center;
+}
+/* A gradient arc, cut to a thin ring, turning around the mark. */
+.route-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: conic-gradient(from 0deg, transparent 0 30%, #c1b8ff 60%, #fed97b 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  animation: route-loader-spin 0.9s linear infinite;
+}
+.route-loader-mark img {
+  animation: route-loader-breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes route-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes route-loader-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.94);
+    opacity: 0.85;
+  }
+}
+@keyframes route-loader-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes route-loader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader-ring,
+  .route-loader-mark img {
+    animation: none;
   }
 }

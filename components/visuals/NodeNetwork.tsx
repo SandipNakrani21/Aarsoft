@@ -80,6 +80,7 @@ export function NodeNetwork({
               strokeLinecap="round"
               strokeDasharray="3 210"
               opacity="0.85"
+              className="node-flow"
               style={{
                 animation: `dash-flow ${11 + (i % 5) * 2.5}s linear infinite`,
                 animationDelay: `${i * 0.55}s`,

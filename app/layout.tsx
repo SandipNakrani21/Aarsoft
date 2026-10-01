@@ -5,7 +5,12 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { IntroLoader } from "@/components/layout/IntroLoader";
+import { RouteLoader } from "@/components/layout/RouteLoader";
+import { CookieConsent } from "@/components/layout/CookieConsent";
+import { visitedScript } from "@/lib/visit";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { PointerEffects } from "@/components/ui/PointerEffects";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
 import { site } from "@/data/site";
@@ -85,17 +90,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${poppins.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Flags returning visitors before first paint, so they never see the intro. */}
+        <script dangerouslySetInnerHTML={{ __html: visitedScript }} />
+      </head>
       <body>
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
 
+        {/*
+          Loaders: the intro plays once per browser; after that, refreshes and
+          page changes get the lighter route loader. Both live in the layout.
+        */}
+        <IntroLoader />
+        <RouteLoader />
         <SmoothScroll />
         <ScrollProgress />
+        <PointerEffects />
         <Navbar />
 
         <main id="main">{children}</main>
 
         <Footer />
+        <CookieConsent />
       </body>
     </html>
   );

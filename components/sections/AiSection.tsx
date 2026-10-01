@@ -1,8 +1,10 @@
 import { Check } from "lucide-react";
-import { Section, SectionHeading } from "@/components/ui/Section";
+import { SectionHeading } from "@/components/ui/Section";
 import { RevealGroup, RevealItem, Reveal } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { NodeNetwork } from "@/components/visuals/NodeNetwork";
+import { Magnetic } from "@/components/ui/Magnetic";
+import { Parallax } from "@/components/ui/Parallax";
 
 const capabilities = [
   "Automate repetitive workflows",
@@ -16,7 +18,17 @@ const capabilities = [
 
 export function AiSection() {
   return (
-    <Section id="ai" tone="dark" compact className="overflow-hidden">
+    <section id="ai" className="section-y-sm relative">
+      <div className="container-x">
+      <div className="relative">
+        {/* Offset gradient frames tracing the two sweeping corners. */}
+        <div aria-hidden="true" className="cta-frame cta-frame-tr" />
+        <div aria-hidden="true" className="cta-frame cta-frame-bl" />
+
+      <div
+        className="cta-shape cta-shape-sharp dark-section relative overflow-hidden bg-ink-900 px-6 py-12 text-white md:px-14 md:py-16"
+        style={{ backgroundColor: "var(--color-black)" }}
+      >
       {/*
        * Abstract AI network. Masked so it fades out before it reaches the
        * copy, rather than running behind the paragraph text.
@@ -31,15 +43,23 @@ export function AiSection() {
             "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.35) 32%, #000 70%)",
         }}
       >
-        <NodeNetwork />
+        {/* Background layers drift at different rates behind the copy. */}
+        <Parallax offset={-28} className="absolute -inset-y-10 inset-x-0" innerClassName="h-full">
+          <NodeNetwork />
+        </Parallax>
       </div>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-32 top-0 h-[520px] w-[520px] rounded-full opacity-[0.18] blur-[130px]"
-        style={{ background: "var(--gradient-primary)" }}
-      />
+      <Parallax
+        offset={70}
+        className="pointer-events-none absolute -right-32 top-0"
+      >
+        <div
+          aria-hidden="true"
+          className="animate-aurora h-[520px] w-[520px] rounded-full opacity-[0.18] blur-[130px]"
+          style={{ background: "var(--gradient-primary)" }}
+        />
+      </Parallax>
 
-      <div className="container-x relative">
+      <div className="relative">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6">
             <SectionHeading
@@ -53,10 +73,12 @@ export function AiSection() {
 
             <Reveal delay={0.18}>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <ButtonLink href="/services/ai-and-automation" variant="onDark" size="lg">
-                  Explore AI Solutions
-                  <ArrowIcon />
-                </ButtonLink>
+                <Magnetic>
+                  <ButtonLink href="/services/ai-and-automation" variant="onDark" size="lg">
+                    Explore AI Solutions
+                    <ArrowIcon />
+                  </ButtonLink>
+                </Magnetic>
                 <ButtonLink href="/contact" variant="onDarkGhost" size="lg">
                   Discuss a use case
                 </ButtonLink>
@@ -91,6 +113,9 @@ export function AiSection() {
           </div>
         </div>
       </div>
-    </Section>
+      </div>
+      </div>
+      </div>
+    </section>
   );
 }

@@ -5,6 +5,12 @@
  * reads from this single source.
  */
 
+import type { LucideIcon } from "lucide-react";
+import { services } from "@/data/services";
+import { solutions } from "@/data/solutions";
+import { industries } from "@/data/company";
+import { slugify } from "@/lib/utils";
+
 export const site = {
   name: "Aarsoft Technologies",
   shortName: "Aarsoft",
@@ -55,27 +61,61 @@ export type NavItem = {
   description?: string;
 };
 
-export const mainNav: NavItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Solutions", href: "/solutions" },
-  { label: "Industries", href: "/industries" },
+export type NavLink = NavItem & {
+  /** Present on items that open a mega menu. */
+  menu?: {
+    /** One line shown beside the sub-links, explaining the group. */
+    intro: string;
+    items: (NavItem & { icon: LucideIcon })[];
+  };
+};
+
+export const mainNav: NavLink[] = [
+  {
+    label: "Services",
+    href: "/services",
+    menu: {
+      intro: "Engineering, design and cloud capabilities, from first idea to production.",
+      items: services.map((s) => ({
+        label: s.title,
+        href: `/services/${s.slug}`,
+        description: s.excerpt,
+        icon: s.icon,
+      })),
+    },
+  },
+  {
+    label: "Solutions",
+    href: "/solutions",
+    menu: {
+      intro: "Platforms built around a business outcome, not a technology.",
+      items: solutions.map((s) => ({
+        label: s.title,
+        href: `/solutions#${slugify(s.title)}`,
+        description: s.outcomes.slice(0, 2).join(" · "),
+        icon: s.icon,
+      })),
+    },
+  },
+  {
+    label: "Industries",
+    href: "/industries",
+    menu: {
+      intro: "Sector knowledge that shapes the data model, the compliance and the rollout.",
+      items: industries.map((i) => ({
+        label: i.name,
+        href: `/industries#${slugify(i.name)}`,
+        description: i.description,
+        icon: i.icon,
+      })),
+    },
+  },
   { label: "About", href: "/about" },
   { label: "Work", href: "/work" },
   { label: "Insights", href: "/insights" },
 ];
 
 export const footerNav: { title: string; links: NavItem[] }[] = [
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Services", href: "/services" },
-      { label: "Work", href: "/work" },
-      { label: "Careers", href: "/careers" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
   {
     title: "Solutions",
     links: [
@@ -84,6 +124,39 @@ export const footerNav: { title: string; links: NavItem[] }[] = [
       { label: "Cloud", href: "/services/cloud-and-devops" },
       { label: "ERP & CRM", href: "/services/erp-and-crm" },
       { label: "UI/UX", href: "/services/ui-ux-design" },
+    ],
+  },
+  {
+    /* The sectors from the industries data; each points at that page. */
+    title: "Industries",
+    links: [
+      { label: "Manufacturing", href: "/industries" },
+      { label: "Travel & Hospitality", href: "/industries" },
+      { label: "Healthcare", href: "/industries" },
+      { label: "E-commerce", href: "/industries" },
+      { label: "Logistics", href: "/industries" },
+      { label: "Care Services", href: "/industries" },
+    ],
+  },
+  {
+    /* Headline picks from the stack; each points at the homepage section. */
+    title: "Technologies",
+    links: [
+      { label: "React & Angular", href: "/#technology" },
+      { label: ".NET & Node.js", href: "/#technology" },
+      { label: "SQL Databases", href: "/#technology" },
+      { label: "Azure & AWS", href: "/#technology" },
+      { label: "Docker & CI/CD", href: "/#technology" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Services", href: "/services" },
+      { label: "Work", href: "/work" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" },
     ],
   },
 ];

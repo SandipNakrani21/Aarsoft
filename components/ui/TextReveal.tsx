@@ -5,6 +5,7 @@ import type { ElementType } from "react";
 import { resolveMotionTag } from "./motionTags";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+import { EASE_OUT } from "@/lib/motion";
 
 /*
  * Headings shrink to their content so the rule beneath can span the
@@ -57,7 +58,24 @@ const line: Variants = {
   hidden: { y: "110%" },
   visible: {
     y: "0%",
-    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.9, ease: EASE_OUT },
+  },
+};
+
+/*
+ * The hero's version also resolves from a slight blur as it rises. Blur is
+ * costly to animate, so it is kept to this one heading, runs once, and is
+ * cleared entirely when it lands so the text is not left on a filter layer.
+ * Opacity is deliberately not animated: the mask already hides the line, and
+ * the headline is the page's largest paint, which should not start at zero.
+ */
+const lineSoft: Variants = {
+  hidden: { y: "110%", filter: "blur(8px)" },
+  visible: {
+    y: "0%",
+    filter: "blur(0px)",
+    transitionEnd: { filter: "none" },
+    transition: { duration: 1, ease: EASE_OUT },
   },
 };
 
@@ -79,12 +97,14 @@ function Lines({
   fill,
   rule,
   reduced,
+  soft = false,
 }: {
   lines: string[];
   gradientLines: number[];
   fill: boolean;
   rule: boolean;
   reduced: boolean;
+  soft?: boolean;
 }) {
   return (
     <>
@@ -102,7 +122,7 @@ function Lines({
             {reduced ? (
               <span className="block">{content}</span>
             ) : (
-              <MotionLine>{content}</MotionLine>
+              <MotionLine soft={soft}>{content}</MotionLine>
             )}
           </span>
         );
@@ -114,9 +134,9 @@ function Lines({
 
 const MotionSpan = resolveMotionTag("span");
 
-function MotionLine({ children }: { children: React.ReactNode }) {
+function MotionLine({ children, soft }: { children: React.ReactNode; soft: boolean }) {
   return (
-    <MotionSpan className="block" variants={line}>
+    <MotionSpan className="block" variants={soft ? lineSoft : line}>
       {children}
     </MotionSpan>
   );
@@ -135,7 +155,15 @@ export function TextReveal({
   gradientLines = [],
   fill = false,
   rule,
-}: SharedProps & { delay?: number }) {
+  soft = false,
+  play = true,
+}: SharedProps & {
+  delay?: number;
+  /** Add a blur-to-sharp resolve to the rise. Reserved for the hero. */
+  soft?: boolean;
+  /** Hold the reveal until this turns true, e.g. while the intro loader shows. */
+  play?: boolean;
+}) {
   const reduced = useReducedMotion();
   const showRule = rule ?? !fill;
 
@@ -161,7 +189,7 @@ export function TextReveal({
       variants={container}
       custom={delay}
       initial="hidden"
-      animate="visible"
+      animate={play ? "visible" : "hidden"}
     >
       <Lines
         lines={lines}
@@ -169,6 +197,7 @@ export function TextReveal({
         fill={fill}
         rule={showRule}
         reduced={false}
+        soft={soft}
       />
     </MotionTag>
   );

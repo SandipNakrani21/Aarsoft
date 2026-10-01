@@ -19,6 +19,7 @@ export function SplitHeading({
   dark = false,
   className,
   descriptionClassName,
+  actionFrom = "below",
   children,
 }: {
   eyebrow: string;
@@ -29,6 +30,8 @@ export function SplitHeading({
   className?: string;
   /** Overrides the default measure, for copy that has to hold one line. */
   descriptionClassName?: string;
+  /** Where the action enters from. "right" slides it in toward the heading. */
+  actionFrom?: "below" | "right";
   /** Optional "view all" style action. */
   children?: ReactNode;
 }) {
@@ -67,7 +70,12 @@ export function SplitHeading({
       </div>
 
       {children && (
-        <Reveal delay={0.16} className="shrink-0 md:pb-2">
+        <Reveal
+          delay={0.16}
+          direction={actionFrom === "right" ? "left" : "up"}
+          distance={actionFrom === "right" ? 20 : undefined}
+          className="shrink-0 md:pb-2"
+        >
           {children}
         </Reveal>
       )}

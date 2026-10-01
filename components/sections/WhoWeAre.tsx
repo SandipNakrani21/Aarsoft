@@ -4,6 +4,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { TextRevealOnScroll } from "@/components/ui/TextReveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { Counter } from "@/components/ui/Counter";
+import { Parallax, ScrollScale } from "@/components/ui/Parallax";
 import { NodeNetwork } from "@/components/visuals/NodeNetwork";
 import { site } from "@/data/site";
 import { stats } from "@/data/company";
@@ -74,15 +75,21 @@ export function WhoWeAre() {
             </RevealGroup>
 
             {/* Figures panel: the company numbers sit on the brand's node artwork */}
-            <Reveal delay={0.1}>
-              <div
-                className="dark-section relative mt-9 overflow-hidden rounded-[var(--radius-lg)] p-7 md:p-9"
-                style={{ backgroundColor: "var(--color-black)" }}
+            {/* Rises in, then settles to full size in step with the scroll. */}
+            <Reveal delay={0.1} direction="scale">
+              <ScrollScale
+                className="cta-shape cta-shape-sharp dark-section relative mt-9 overflow-hidden bg-ink-900 p-7 md:p-9"
+                from={0.965}
               >
                 <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />
-                <div aria-hidden="true" className="absolute inset-0 opacity-70">
+                {/* The network drifts against the figures, a layer behind them. */}
+                <Parallax
+                  offset={-18}
+                  className="absolute -inset-y-6 inset-x-0 opacity-70"
+                  innerClassName="h-full"
+                >
                   <NodeNetwork />
-                </div>
+                </Parallax>
                 <div
                   aria-hidden="true"
                   className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-25 blur-[90px]"
@@ -104,7 +111,7 @@ export function WhoWeAre() {
                     </div>
                   ))}
                 </dl>
-              </div>
+              </ScrollScale>
             </Reveal>
           </div>
         </div>
