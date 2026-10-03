@@ -19,6 +19,8 @@ const nextConfig = {
     NEXT_PUBLIC_SITE_URL: siteUrl,
   },
   reactStrictMode: true,
+  // Hide the round "N" badge Next.js shows in a corner while running in development.
+  devIndicators: false,
   poweredByHeader: false,
   compress: true,
   images: {

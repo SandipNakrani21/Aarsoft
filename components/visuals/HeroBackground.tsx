@@ -147,11 +147,11 @@ export function HeroBackground({ src = site.heroVideo }: { src?: string }) {
     >
       {/* Ambient glows, drifting slowly behind the artwork's own orbs */}
       <div
-        className="animate-aurora absolute -right-[10%] -top-[20%] h-[620px] w-[620px] rounded-full opacity-[0.14] blur-[120px]"
+        className="animate-aurora absolute -right-[10%] -top-[20%] h-[620px] w-[620px] rounded-full opacity-[0.14] soft-glow"
         style={{ background: "var(--color-lavender)" }}
       />
       <div
-        className="animate-float-slow absolute -bottom-[20%] left-[8%] h-[480px] w-[480px] rounded-full opacity-[0.1] blur-[120px]"
+        className="animate-float-slow absolute -bottom-[20%] left-[8%] h-[480px] w-[480px] rounded-full opacity-[0.1] soft-glow"
         style={{ background: "var(--color-gold)" }}
       />
 

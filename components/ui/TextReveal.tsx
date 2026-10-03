@@ -32,15 +32,21 @@ const highlightClass = (fill: boolean) => (fill ? "text-gradient" : undefined);
  * the title's last character. Its own top margin holds it clear of the
  * descenders; the bottom margin is what the copy below is spaced from.
  */
-function HeadingRule() {
-  return (
-    <span
-      aria-hidden="true"
-      className="mb-1 mt-6 block h-[3px] w-full rounded-full"
-      style={{ background: "var(--gradient-primary)" }}
-    />
-  );
+function HeadingRule({ reduced }: { reduced: boolean }) {
+  const className = "mb-1 mt-6 block h-[3px] w-full origin-left rounded-full";
+  const style = { background: "var(--gradient-primary)" };
+  if (reduced) return <span aria-hidden="true" className={className} style={style} />;
+  // Draws in from left to right once the title lines have risen.
+  return <MotionSpan aria-hidden="true" className={className} style={style} variants={ruleDraw} />;
 }
+
+const ruleDraw: Variants = {
+  hidden: { scaleX: 0 },
+  visible: {
+    scaleX: 1,
+    transition: { duration: 1.1, delay: 0.2, ease: EASE_OUT },
+  },
+};
 
 /*
  * One parent drives the whole heading and the lines inherit through
@@ -127,7 +133,7 @@ function Lines({
           </span>
         );
       })}
-      {rule && <HeadingRule />}
+      {rule && <HeadingRule reduced={reduced} />}
     </>
   );
 }

@@ -43,6 +43,14 @@
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
+  /*
+   * Card corners, site-wide: top-left and bottom-right square, top-right
+   * and bottom-left rounded by this much. Used by `.card-shape` and every
+   * card style (card-box, tech-card, svc-card).
+   */
+  --card-r: 24px;
+  /* The same corner pattern on buttons, scaled to their height. */
+  --btn-r: 16px;
   --radius-hero: 24px;
 
   /* Elevation — tinted with brand black, never pure neutral */
@@ -238,8 +246,8 @@
     position: relative;
     isolation: isolate;
     background-color: rgba(158, 158, 172, 0.28);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow:
       /* The pane's own drop shadow. */
       0 18px 40px -18px rgba(13, 12, 21, 0.4),
@@ -439,10 +447,13 @@
       linear-gradient(to bottom, rgba(13, 12, 21, 0.045) 1px, transparent 1px);
     background-size: 64px 64px;
   }
+  /*
+   * Dark grounds are plain: the grid lines that used to sit on them are
+   * switched off here, site-wide, so every dark section and panel reads as a
+   * clean surface. The class is kept so the lines can come back in one place.
+   */
   .brand-grid-dark {
-    background-image: linear-gradient(to right, rgba(193, 184, 255, 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(193, 184, 255, 0.07) 1px, transparent 1px);
-    background-size: 64px 64px;
+    background-image: none;
   }
   .mask-fade-b {
     -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
@@ -490,6 +501,179 @@
     opacity: 1;
   }
 
+  /* The site card shape, for cards that don't use `.card-box` (see `--card-r`). */
+  .card-shape {
+    border-radius: 0 var(--card-r) 0 var(--card-r);
+  }
+  /* Buttons share the card pattern: square top-left and bottom-right. */
+  .btn-shape {
+    border-radius: 0 var(--btn-r) 0 var(--btn-r);
+  }
+
+  /*
+   * The site button (Button.tsx): an outline with two slanted gaps cut into
+   * it, one in the top edge toward the left and one in the bottom edge
+   * toward the right. On hover the brand gradient wipes in from the left on
+   * a slant and the outline fades into it.
+   *
+   * The gaps are cut out of the outline with a mask rather than painted in
+   * the page colour, so they read correctly on any ground. The outline
+   * colour comes from `--btn-line`, set per variant.
+   */
+  .btn-cut {
+    /* `--btn-line` is left to the variant; the outline falls back to ink below. */
+    --btn-stroke: 2px;
+    overflow: hidden;
+    background: transparent;
+  }
+  /* Outline, with the two gaps knocked out of it. */
+  .btn-cut::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: var(--btn-stroke) solid var(--btn-line, var(--color-ink-900));
+    border-radius: inherit;
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(115deg, transparent 22%, #000 22% 78%, transparent 78%) left 14% top 0 / var(--cut-w, 2.25rem) 6px no-repeat,
+      linear-gradient(115deg, transparent 22%, #000 22% 78%, transparent 78%) right 14% bottom 0 / var(--cut-w, 2.25rem) 6px no-repeat,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(115deg, transparent 22%, #000 22% 78%, transparent 78%) left 14% top 0 / var(--cut-w, 2.25rem) 6px no-repeat,
+      linear-gradient(115deg, transparent 22%, #000 22% 78%, transparent 78%) right 14% bottom 0 / var(--cut-w, 2.25rem) 6px no-repeat,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /*
+   * The fill. Wider than the button and skewed, so its leading edge is a
+   * slant; it starts parked off the left edge and slides across on hover.
+   */
+  .btn-cut::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -20%;
+    z-index: -1;
+    width: 140%;
+    background:
+      radial-gradient(120% 120% at 100% 100%, rgba(255, 255, 255, 0.3), transparent 60%),
+      var(--gradient-primary);
+    transform: translateX(-101%) skewX(-24deg);
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-cut:hover::before,
+  .btn-cut:focus-visible::before {
+    transform: translateX(0) skewX(-24deg);
+  }
+  .btn-cut:hover::after,
+  .btn-cut:focus-visible::after {
+    opacity: 0;
+  }
+
+  /*
+   * Icon cards (CardHead.tsx). The icon sits in a tab bound into the square
+   * top-left corner, on the brand gradient, and the tab goes black while the
+   * card is hovered or focused. The title sits beside the tab, centred on it.
+   *
+   * `.corner-card` goes on the card. It owns the padding, since the head
+   * reaches out to the card's top and left edges: no top padding, and the
+   * head pulls left by the side padding. `--cc-border` is the card's border
+   * width, so the tab covers the border rather than sitting inside it.
+   */
+  .corner-card {
+    --cc-pad: 1.75rem;
+    --cc-tab: 60px;
+    --cc-border: 1px;
+    position: relative;
+    padding: 0 var(--cc-pad) var(--cc-pad);
+  }
+  @media (min-width: 1024px) {
+    .corner-card {
+      --cc-pad: 2rem;
+    }
+  }
+
+  .corner-head {
+    display: flex;
+    min-height: var(--cc-tab);
+    align-items: center;
+    margin-left: calc(-1 * var(--cc-pad));
+    /* Right padding is left to the card (e.g. `pr-8` to clear a corner number). */
+    padding-block: 0.5rem;
+    padding-left: calc(var(--cc-tab) + 1.25rem);
+  }
+  .corner-title {
+    min-width: 0;
+  }
+
+  .corner-tab {
+    position: absolute;
+    top: calc(-1 * var(--cc-border));
+    left: calc(-1 * var(--cc-border));
+    z-index: 1;
+    display: flex;
+    width: var(--cc-tab);
+    height: var(--cc-tab);
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 16px 0;
+    background-color: var(--color-black);
+    isolation: isolate;
+  }
+  /* The gradient layer, faded out on hover to show the black beneath. */
+  .corner-tab::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-lavender) 0%, var(--color-gold) 100%);
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .corner-tab-icon {
+    color: var(--color-ink-900);
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Small curves joining the tab to the card's top and left edges. */
+  .corner-fillet {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    -webkit-mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
+    mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
+    transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .corner-fillet-top {
+    top: 0;
+    right: -12px;
+    background-color: var(--color-gold);
+  }
+  .corner-fillet-side {
+    top: 100%;
+    left: 0;
+    background-color: var(--color-lavender);
+  }
+
+  .corner-card:hover .corner-tab::before,
+  .corner-card:focus-within .corner-tab::before,
+  .corner-card:focus-visible .corner-tab::before {
+    opacity: 0;
+  }
+  .corner-card:hover .corner-tab-icon,
+  .corner-card:focus-within .corner-tab-icon,
+  .corner-card:focus-visible .corner-tab-icon {
+    color: var(--color-white);
+  }
+  .corner-card:hover .corner-fillet,
+  .corner-card:focus-within .corner-fillet,
+  .corner-card:focus-visible .corner-fillet {
+    background-color: var(--color-black);
+  }
+
   /*
    * The one card surface used across the site: a hairline box that lifts and
    * picks up a gradient ring on hover. Sections that used to be cells in a
@@ -499,7 +683,7 @@
     position: relative;
     height: 100%;
     border: 1px solid var(--color-ink-200);
-    border-radius: var(--radius-md);
+    border-radius: 0 var(--card-r) 0 var(--card-r);
     /*
      * The lavender wash lives on the background-image layer rather than a
      * pseudo-element, so it paints above the card colour but below the
@@ -539,18 +723,20 @@
   .card-box {
     isolation: isolate;
   }
+  /*
+   * Hover fill, shared by every card: the brand gradient with a soft white
+   * light in the bottom-right corner, faded in over the card. Copy stays
+   * dark on it (see the colour rules below).
+   */
   .card-box::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
     border-radius: inherit;
-    background: radial-gradient(
-      340px circle at var(--mx, 50%) var(--my, 0%),
-      rgba(193, 184, 255, 0.24),
-      rgba(254, 217, 123, 0.06) 45%,
-      transparent 70%
-    );
+    background:
+      radial-gradient(120% 70% at 100% 100%, rgba(255, 255, 255, 0.28), transparent 60%),
+      var(--gradient-primary);
     opacity: 0;
     transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
@@ -558,6 +744,18 @@
   .card-box:hover::before,
   .card-box:focus-within::before {
     opacity: 1;
+  }
+  /* On the gradient the hairline border clears and grey body copy darkens a step. */
+  .card-box:hover,
+  .card-box:focus-within {
+    border-color: transparent;
+  }
+  .card-box .text-ink-500 {
+    transition: color 0.45s ease;
+  }
+  .card-box:hover .text-ink-500,
+  .card-box:focus-within .text-ink-500 {
+    color: var(--color-ink-700);
   }
 
   /* Deeper lift for the cards that act as the page's main objects. */
@@ -911,34 +1109,36 @@
   }
 
   /*
-   * Technology card. The icon hangs from the top edge as a tab, and a notch
-   * is cut from the bottom edge for the "View more" pill, which sits in the
-   * shell beside the card rather than inside it. The notch is a mask, so the
-   * shell's drop-shadow follows the cut shape. On hover the card turns to the
-   * dark brand surface.
-   *
-   * Notch geometry (px): depth 54, opening 164, fillets 16, corners 18, with
-   * 36 of card left to its right. The pill is 148 x 46, 8 in from each side.
+   * Technology card, in the site card shape (square top-left and
+   * bottom-right). The icon sits as a tab bound into the square top-left
+   * corner. On hover the card turns to the brand surface.
    */
+  /* Shadows sit on the card as box-shadows: far cheaper to animate than a filter. */
   .tech-shell {
     position: relative;
     height: 100%;
-    filter: drop-shadow(0 1px 1px rgba(13, 12, 21, 0.05)) drop-shadow(0 8px 16px rgba(13, 12, 21, 0.06));
-    transition:
-      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-      filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .tech-shell:hover,
   .tech-shell:focus-within {
     transform: translateY(-6px);
-    filter: drop-shadow(0 2px 3px rgba(13, 12, 21, 0.08)) drop-shadow(0 24px 32px rgba(13, 12, 21, 0.18));
+  }
+  .tech-shell .tech-card {
+    box-shadow: 0 1px 2px rgba(13, 12, 21, 0.05), 0 8px 18px -6px rgba(13, 12, 21, 0.08);
+    transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .tech-shell:hover .tech-card,
+  .tech-shell:focus-within .tech-card {
+    box-shadow: 0 2px 4px rgba(13, 12, 21, 0.08), 0 26px 40px -14px rgba(13, 12, 21, 0.22);
   }
 
   .tech-card {
     position: relative;
     isolation: isolate;
     height: 100%;
-    border-radius: 28px;
+    /* No border, so the corner tab sits flush with the edge. */
+    --cc-border: 0px;
+    border-radius: 0 var(--card-r) 0 var(--card-r);
     background: linear-gradient(
       115deg,
       var(--color-gray) 0%,
@@ -946,18 +1146,6 @@
       var(--color-lavender-faint) 82%,
       var(--color-gold-soft) 100%
     );
-    -webkit-mask-image:
-      linear-gradient(#000 0 0), linear-gradient(#000 0 0),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='54'%3E%3Cpath d='M0 0H232V54H196A16 16 0 0 1 180 38V18A18 18 0 0 0 162 0H34A18 18 0 0 0 16 18V38A16 16 0 0 1 0 54Z'/%3E%3C/svg%3E");
-    mask-image:
-      linear-gradient(#000 0 0), linear-gradient(#000 0 0),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='232' height='54'%3E%3Cpath d='M0 0H232V54H196A16 16 0 0 1 180 38V18A18 18 0 0 0 162 0H34A18 18 0 0 0 16 18V38A16 16 0 0 1 0 54Z'/%3E%3C/svg%3E");
-    -webkit-mask-size: 100% calc(100% - 53px), calc(100% - 231px) 54px, 232px 54px;
-    mask-size: 100% calc(100% - 53px), calc(100% - 231px) 54px, 232px 54px;
-    -webkit-mask-position: top left, bottom left, bottom right;
-    mask-position: top left, bottom left, bottom right;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
   }
   /* Dark brand surface, faded in on hover. */
   .tech-card::before {
@@ -976,75 +1164,6 @@
   .tech-shell:hover .tech-card::before,
   .tech-shell:focus-within .tech-card::before {
     opacity: 1;
-  }
-
-  /* Icon tab: flush with the top edge, joined to it by two small fillets. */
-  .tech-tab {
-    position: absolute;
-    top: 0;
-    left: 1.75rem;
-    display: flex;
-    width: 60px;
-    height: 60px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0 0 16px 16px;
-    /*
-     * At rest the tab is Deep Black with a white icon, anchoring the light
-     * card. On hover the brand gradient fills it and the icon turns dark,
-     * matching the gradient the title picks up.
-     */
-    background-color: var(--color-black);
-    isolation: isolate;
-  }
-  .tech-tab::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: linear-gradient(90deg, var(--color-lavender) 0%, var(--color-gold) 100%);
-    opacity: 0;
-    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .tech-tab-icon {
-    color: var(--color-white);
-    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .tech-tab-fillet {
-    position: absolute;
-    top: 0;
-    width: 12px;
-    height: 12px;
-    background-color: var(--color-black);
-    transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .tech-tab-fillet-l {
-    left: -12px;
-    -webkit-mask: radial-gradient(circle at 0 100%, transparent 11.5px, #000 12px);
-    mask: radial-gradient(circle at 0 100%, transparent 11.5px, #000 12px);
-  }
-  .tech-tab-fillet-r {
-    right: -12px;
-    -webkit-mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
-    mask: radial-gradient(circle at 100% 100%, transparent 11.5px, #000 12px);
-  }
-  .tech-shell:hover .tech-tab::before,
-  .tech-shell:focus-within .tech-tab::before {
-    opacity: 1;
-  }
-  .tech-shell:hover .tech-tab-icon,
-  .tech-shell:focus-within .tech-tab-icon {
-    color: var(--color-ink-900);
-  }
-  /* Each fillet takes the gradient end it touches. */
-  .tech-shell:hover .tech-tab-fillet-l,
-  .tech-shell:focus-within .tech-tab-fillet-l {
-    background-color: var(--color-lavender);
-  }
-  .tech-shell:hover .tech-tab-fillet-r,
-  .tech-shell:focus-within .tech-tab-fillet-r {
-    background-color: var(--color-gold);
   }
 
   .tech-title,
@@ -1084,91 +1203,17 @@
     color: rgba(255, 255, 255, 0.9);
   }
 
-  /* The pill that sits in the notch. */
-  .tech-more {
-    position: absolute;
-    right: 60px;
-    bottom: 0;
-    width: 148px;
-    height: 46px;
-    isolation: isolate;
-    /* White at rest; the gradient wipes in on hover. */
-    border: 1px solid var(--color-ink-100);
-    background-color: var(--color-white);
-    color: var(--color-ink-900);
-    transition:
-      color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  /* Same split wipe as the shared buttons, run by hovering the whole card. */
-  .tech-shell:hover .tech-more::before,
-  .tech-shell:hover .tech-more::after,
-  .tech-more:focus-visible::before,
-  .tech-more:focus-visible::after {
-    transform: translateX(0);
-  }
-  .tech-shell:hover .tech-more,
-  .tech-more:focus-visible {
-    border-color: transparent;
-    color: var(--color-ink-900);
-  }
-  .tech-more svg {
-    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .tech-more:hover svg,
-  .tech-more:focus-visible svg {
-    transform: translateX(3px);
-  }
-
   /*
    * Inverted colour scheme for the technology cards, active only inside
    * `.tech-invert`. On hover the card fills with the brand gradient instead
-   * of going black, and the icon tab and "View more" go black. Removing the
-   * class in TechStack.tsx falls back to the dark-card hover above.
+   * of going black. The icon tab is the shared corner tab (`.corner-tab`).
+   * Removing the class in TechStack.tsx falls back to the dark-card hover.
    */
-  /*
-   * At rest the icon tab carries the brand gradient and "View more" is
-   * white; the hover rules below turn both black as the card fills with
-   * gradient.
-   */
-  .tech-invert .tech-tab::before {
-    opacity: 1;
-  }
-  .tech-invert .tech-tab-icon {
-    color: var(--color-ink-900);
-  }
-  .tech-invert .tech-tab-fillet-l {
-    background-color: var(--color-lavender);
-  }
-  .tech-invert .tech-tab-fillet-r {
-    background-color: var(--color-gold);
-  }
-  /* "View more" stays white at rest; only the icon tab carries the gradient. */
-  .tech-invert .tech-more {
-    border-color: var(--color-ink-100);
-    background: var(--color-white);
-    color: var(--color-ink-900);
-  }
-
   .tech-invert .tech-shell:hover .tech-card::before,
   .tech-invert .tech-shell:focus-within .tech-card::before {
     background:
       radial-gradient(120% 70% at 100% 100%, rgba(255, 255, 255, 0.28), transparent 60%),
       var(--gradient-primary);
-  }
-  .tech-invert .tech-shell:hover .tech-tab::before,
-  .tech-invert .tech-shell:focus-within .tech-tab::before {
-    opacity: 0;
-  }
-  .tech-invert .tech-shell:hover .tech-tab-icon,
-  .tech-invert .tech-shell:focus-within .tech-tab-icon {
-    color: var(--color-white);
-  }
-  .tech-invert .tech-shell:hover .tech-tab-fillet-l,
-  .tech-invert .tech-shell:focus-within .tech-tab-fillet-l,
-  .tech-invert .tech-shell:hover .tech-tab-fillet-r,
-  .tech-invert .tech-shell:focus-within .tech-tab-fillet-r {
-    background-color: var(--color-black);
   }
   /* On the light gradient the copy stays dark, so the title drops its gradient fill. */
   .tech-invert .tech-shell:hover .tech-title,
@@ -1190,15 +1235,6 @@
   .tech-invert .tech-shell:hover .tech-chip-glyph,
   .tech-invert .tech-shell:focus-within .tech-chip-glyph {
     color: var(--color-ink-900);
-  }
-  /* "View more" wipes to black rather than to the gradient. */
-  .tech-invert .tech-more::before,
-  .tech-invert .tech-more::after {
-    background: var(--color-black);
-  }
-  .tech-invert .tech-shell:hover .tech-more,
-  .tech-invert .tech-more:focus-visible {
-    color: var(--color-white);
   }
 }
 
@@ -1272,6 +1308,17 @@
 }
 .animate-aurora {
   animation: aurora 22s ease-in-out infinite;
+}
+
+/*
+ * Soft glow without a blur filter. The glow orbs used to be blurred circles,
+ * and a large blur re-rendered every frame of their drift was the single
+ * biggest scroll cost on the site. A radial mask gives the same soft falloff
+ * at the price of a static mask, so the drift stays on the GPU.
+ */
+.soft-glow {
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%);
 }
 
 /* The hero artwork settles in behind the headline rather than being there at first paint. */
@@ -1364,6 +1411,10 @@
   .tech-shell:hover,
   .tech-shell:focus-within {
     transform: none;
+  }
+  /* The cut button fills on hover without sliding. */
+  .btn-cut::before {
+    transition: none;
   }
   /* Buttons still fill on hover, but without the sliding panels. */
   .btn-gradient::before,
@@ -1657,7 +1708,7 @@
   animation-name: hero-flow;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  filter: drop-shadow(0 0 4px rgba(254, 217, 123, 0.9));
+  /* No glow filter: it forced the whole hero artwork to re-render every frame. */
 }
 @keyframes hero-flow {
   from {
@@ -1677,7 +1728,6 @@
     rgba(254, 217, 123, 0.06) 55%,
     transparent 100%
   );
-  mix-blend-mode: screen;
   animation: hero-sweep 12s cubic-bezier(0.45, 0, 0.55, 1) 2.5s infinite;
   transform: translateX(0);
 }
@@ -1719,11 +1769,13 @@
 
 .svc-card {
   position: relative;
+  isolation: isolate;
   display: flex;
   height: 100%;
   flex-direction: column;
-  border-radius: 16px;
-  padding: 2.25rem 1.75rem 1.75rem;
+  border-radius: 0 var(--card-r) 0 var(--card-r);
+  /* Shared icon-card padding (`.corner-card`), so the tab meets the corner. */
+  padding: 0 var(--cc-pad, 1.75rem) var(--cc-pad, 1.75rem);
   border: 1px solid rgba(193, 184, 255, 0.12);
   background:
     linear-gradient(160deg, rgba(193, 184, 255, 0.1) 0%, rgba(193, 184, 255, 0.04) 100%),
@@ -1743,6 +1795,46 @@
     0 24px 48px -20px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(254, 217, 123, 0.08),
     0 18px 50px -24px rgba(193, 184, 255, 0.45);
+}
+
+/*
+ * Hover: the same gradient fill as every other card. The copy, light on the
+ * dark card, turns dark so it reads on the gradient.
+ */
+.svc-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 70% at 100% 100%, rgba(255, 255, 255, 0.28), transparent 60%),
+    var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.svc-card:hover::before,
+.svc-card:focus-visible::before {
+  opacity: 1;
+}
+.svc-card:hover .text-gradient,
+.svc-card:focus-visible .text-gradient {
+  background: none;
+  -webkit-text-fill-color: var(--color-ink-900);
+  color: var(--color-ink-900);
+}
+.svc-card .text-ink-300,
+.svc-card .text-white {
+  transition: color 0.45s ease;
+}
+.svc-card:hover .text-ink-300,
+.svc-card:focus-visible .text-ink-300 {
+  color: var(--color-ink-700);
+}
+.svc-card:hover .text-white,
+.svc-card:focus-visible .text-white {
+  color: var(--color-ink-900);
 }
 
 /* The big outlined number, riding the card's top-right corner. */
@@ -1778,33 +1870,27 @@
   fill-opacity: 0.22;
   stroke-opacity: 1;
 }
-
-.svc-icon {
-  display: flex;
-  width: 3rem;
-  height: 3rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(193, 184, 255, 0.12);
-  color: var(--color-lavender);
+/*
+ * Trial (Industries only): a black copy of the number, clipped to the part
+ * that overlaps the card, fades in on hover. Without it that part vanishes
+ * into the gradient fill.
+ */
+.svc-number-ink {
+  opacity: 0;
   transition:
-    background 0.45s ease,
-    color 0.45s ease,
-    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    fill-opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    stroke-opacity 0.6s ease;
 }
-.svc-card:hover .svc-icon,
-.svc-card:focus-visible .svc-icon {
-  background: var(--gradient-primary);
-  color: var(--color-ink-900);
-  transform: translateY(-2px) rotate(-6deg);
+.svc-card:hover .svc-number-ink,
+.svc-card:focus-visible .svc-number-ink {
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .svc-card:hover,
   .svc-card:focus-visible,
-  .svc-card:hover .svc-number,
-  .svc-card:hover .svc-icon {
+  .svc-card:hover .svc-number {
     transform: none;
   }
 }
@@ -1832,9 +1918,7 @@ html[data-visited] .intro-loader {
   z-index: 95;
   display: none;
   place-items: center;
-  background: rgba(255, 255, 255, 0.96);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.97);
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 html[data-visited] .route-loader[data-phase="boot"],
@@ -1909,4 +1993,11 @@ html[data-visited] .route-loader[data-phase="boot"] {
   .route-loader-mark img {
     animation: none;
   }
+}
+
+/* Ambient loops in a section that has scrolled out of view stop until it returns (see AmbientPause). */
+[data-paused] *,
+[data-paused] *::before,
+[data-paused] *::after {
+  animation-play-state: paused !important;
 }

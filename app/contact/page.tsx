@@ -156,7 +156,7 @@ export default function ContactPage() {
                     <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />
                     <div
                       aria-hidden="true"
-                      className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-25 blur-[70px]"
+                      className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-25 soft-glow"
                       style={{ background: "var(--gradient-primary)" }}
                     />
                     <p className="relative text-[0.8125rem] uppercase tracking-[0.16em] text-lavender">

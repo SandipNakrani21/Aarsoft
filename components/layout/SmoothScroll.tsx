@@ -20,9 +20,12 @@ export function SmoothScroll() {
     if (prefersReduced) return;
 
     const lenis = new Lenis({
-      duration: 1.1,
-      // Exponential ease-out: fast pickup, long settle.
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      /*
+       * Interpolated scrolling: each frame closes 10% of the gap to the target,
+       * so the page glides and keeps gliding while the wheel keeps turning,
+       * which also drives the scroll-linked section entrances evenly.
+       */
+      lerp: 0.1,
       orientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1,

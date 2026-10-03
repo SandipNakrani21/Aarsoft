@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
 import { techStack } from "@/data/company";
 import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { RevealGroup, RevealItem, RevealSubItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 
 export function TechStack() {
   return (
@@ -21,28 +21,24 @@ export function TechStack() {
           </ButtonLink>
         </SplitHeading>
 
-        {/* Capability cards: icon tab at the top, "View more" in the notch. */}
+        {/* Capability cards: icon tab in the top-left corner, title beside it. */}
         <RevealGroup
+          from="left"
           as="ul"
           stagger={0.06}
           /* `tech-invert`: gradient accents at rest, gradient card on hover. */
           className="tech-invert mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
           {techStack.map((group) => {
-            const Icon = group.icon;
             return (
               <RevealItem as="li" key={group.category}>
                 <div className="tech-shell">
-                  <article className="tech-card flex flex-col px-7 pt-24 pb-[5.5rem]">
-                    <span className="tech-tab" aria-hidden="true">
-                      <span className="tech-tab-fillet tech-tab-fillet-l" />
-                      <span className="tech-tab-fillet tech-tab-fillet-r" />
-                      <Icon className="tech-tab-icon h-7 w-7" strokeWidth={1.5} />
-                    </span>
-
-                    <h3 className="tech-title self-start text-2xl font-semibold tracking-[-0.025em] text-ink-900">
-                      {group.category}
-                    </h3>
+                  <article className="tech-card corner-card flex flex-col">
+                    <CardHead
+                      icon={group.icon}
+                      title={group.category}
+                      titleClassName="tech-title text-2xl font-semibold tracking-[-0.025em] text-ink-900"
+                    />
 
                     <p className="tech-summary mt-3 text-[1.0625rem] leading-relaxed text-ink-500">
                       {group.summary}
@@ -79,15 +75,6 @@ export function TechStack() {
                       })}
                     </ul>
                   </article>
-
-                  <Link
-                    href="/services"
-                    className="tech-more btn-split inline-flex items-center justify-center gap-2 rounded-full text-[0.9375rem] font-medium"
-                  >
-                    View more
-                    <ArrowIcon />
-                    <span className="sr-only"> about {group.category}</span>
-                  </Link>
                 </div>
               </RevealItem>
             );

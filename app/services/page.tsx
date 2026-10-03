@@ -6,6 +6,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { TechStack } from "@/components/sections/TechStack";
 import { CtaSection } from "@/components/sections/CtaSection";
@@ -71,32 +72,33 @@ export default function ServicesPage() {
             className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3"
           >
             {services.map((service) => {
-              const Icon = service.icon;
               return (
                 <RevealItem as="li" key={service.slug} className="h-full">
                   <Link
                     href={`/services/${service.slug}`}
-                    className="card-box group relative flex h-full flex-col overflow-hidden p-8"
+                    className="card-box corner-card group flex h-full flex-col"
                   >
-                    {/* Oversized numeral, set back so it reads as texture. */}
+                    {/*
+                      Oversized numeral, set back so it reads as texture. It is
+                      clipped by its own layer, so the card needs no overflow
+                      clipping and the corner tab can sit over the border.
+                    */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute -right-2 -top-6 font-display text-[7rem] font-semibold leading-none tracking-[-0.05em] text-ink-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:text-ink-200"
+                      className="pointer-events-none absolute inset-0 overflow-hidden [border-radius:inherit]"
                     >
-                      {service.number}
+                      <span className="pointer-events-none absolute -right-2 -top-6 font-display text-[7rem] font-semibold leading-none tracking-[-0.05em] text-ink-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:text-ink-200">
+                        {service.number}
+                      </span>
                     </span>
 
-                    <span className="relative flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)] bg-surface transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:bg-white">
-                      <Icon
-                        className="h-7 w-7 text-ink-900"
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      />
-                    </span>
-
-                    <h2 className="relative mt-7 font-display text-2xl leading-tight tracking-[-0.025em] text-ink-900">
-                      {service.title}
-                    </h2>
+                    <CardHead
+                      icon={service.icon}
+                      title={service.title}
+                      as="h2"
+                      className="relative"
+                      titleClassName="text-2xl leading-tight text-ink-900"
+                    />
 
                     <p className="relative mt-3 text-[1.125rem] leading-relaxed text-ink-500">
                       {service.excerpt}

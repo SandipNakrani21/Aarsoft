@@ -46,7 +46,7 @@ export function Footer() {
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full opacity-[0.13] blur-[120px]"
+        className="pointer-events-none absolute -left-40 -top-40 h-[420px] w-[420px] rounded-full opacity-[0.13] soft-glow"
         style={{ background: "var(--gradient-dark)" }}
       />
 
@@ -123,8 +123,8 @@ export function Footer() {
               </li>
             </ul>
 
-            {/* Social icons sit with the rest of the ways to reach us. */}
-            <ul className="mt-5 flex flex-wrap gap-2">
+            {/* Social icons sit with the rest of the ways to reach us: three across, five in two rows. */}
+            <ul className="mt-5 grid w-max grid-cols-3 gap-3">
               {site.social.map((item) => {
                 const Icon = socialIcons[item.icon];
                 if (!Icon) return null;
@@ -136,9 +136,9 @@ export function Footer() {
                       rel="noopener noreferrer"
                       aria-label={item.label}
                       title={item.label}
-                      className="btn-gradient relative isolate flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] text-ink-300 transition-[color,border-color,translate,scale] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:scale-105 hover:border-transparent hover:text-ink-900"
+                      className="btn-cut relative isolate flex h-14 w-14 items-center justify-center btn-shape text-white [--btn-line:rgba(193,184,255,0.5)] [--cut-w:0.875rem] transition-[color,translate] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:text-ink-900 focus-visible:text-ink-900"
                     >
-                      <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+                      <Icon className="h-6 w-6" strokeWidth={1.7} aria-hidden="true" />
                     </a>
                   </li>
                 );
@@ -148,7 +148,7 @@ export function Footer() {
             {/* Matches the social buttons: a bordered pill that fills with the gradient */}
             <Link
               href="/contact"
-              className="btn-gradient group/btn relative isolate mt-5 inline-flex h-10 items-center gap-2 rounded-[var(--radius-sm)] border border-[rgba(193,184,255,0.24)] px-4 text-[0.9375rem] font-medium text-white transition-colors duration-300 hover:border-transparent hover:text-ink-900"
+              className="btn-cut group/btn relative isolate mt-6 inline-flex h-14 items-center gap-2.5 btn-shape px-7 text-[1.0625rem] font-medium text-white [--btn-line:rgba(193,184,255,0.5)] transition-colors duration-300 hover:text-ink-900"
             >
               Start a project
               <ArrowIcon />

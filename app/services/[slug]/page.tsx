@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { getService, services } from "@/data/services";
@@ -10,10 +11,12 @@ import {
 } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { splitIntoTwoLines } from "@/lib/utils";
+import { techMark } from "@/lib/techIcons";
 import { PageHero } from "@/components/sections/PageHero";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 import { Accordion } from "@/components/ui/Accordion";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { CtaSection } from "@/components/sections/CtaSection";
@@ -85,7 +88,7 @@ export default async function ServicePage({ params }: Params) {
         <div className="container-x">
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-8">
             <Reveal>
-              <article className="hairline h-full rounded-[var(--radius-lg)] bg-white p-8 md:p-10">
+              <article className="hairline h-full card-shape bg-white p-8 md:p-10">
                 <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
                   {service.problem.title}
                 </span>
@@ -114,7 +117,7 @@ export default async function ServicePage({ params }: Params) {
                 <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full opacity-20 blur-[80px]"
+                  className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full opacity-20 soft-glow"
                   style={{ background: "var(--gradient-primary)" }}
                 />
 
@@ -159,23 +162,18 @@ export default async function ServicePage({ params }: Params) {
           <RevealGroup
             as="ul"
             stagger={0.07}
-            className="mt-10 grid gap-5 md:grid-cols-2"
+            /* All four capabilities on one row on desktop. */
+            className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
           >
-            {service.capabilities.map((cap, i) => (
+            {service.capabilities.map((cap) => (
               <RevealItem as="li" key={cap.title}>
-                <div className="card-box group p-8 md:p-10">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[0.8125rem] tracking-[0.14em] text-ink-400">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <Icon
-                      className="h-7 w-7 text-ink-300 transition-colors duration-300 group-hover:text-ink-900 link-gradient"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <h3 className="fluid-h3 mt-8 text-ink-900">{cap.title}</h3>
-                  <p className="mt-3 max-w-[46ch] text-[1.125rem] leading-relaxed text-ink-500">
+                <div className="card-box corner-card group">
+                  <CardHead
+                    icon={Icon}
+                    title={cap.title}
+                    titleClassName="text-xl leading-tight text-ink-900"
+                  />
+                  <p className="mt-3 text-[1.0625rem] leading-relaxed text-ink-500">
                     {cap.description}
                   </p>
                 </div>
@@ -197,18 +195,30 @@ export default async function ServicePage({ params }: Params) {
                 description="Chosen for support horizons and hiring pools, not novelty."
               />
             </div>
-            <Reveal delay={0.1} className="md:col-span-8">
-              <ul className="flex flex-wrap gap-2">
-                {service.technology.map((tech) => (
-                  <li
-                    key={tech}
-                    className="hairline rounded-[var(--radius-sm)] bg-white px-4 py-2.5 text-[1.125rem] text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-ink-900 hover:shadow-sm"
-                  >
-                    {tech}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
+            {/* Small logo cards, five to a row beside the heading. */}
+            <RevealGroup
+              as="ul"
+              stagger={0.04}
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:col-span-8 lg:grid-cols-5"
+            >
+              {service.technology.map((tech) => {
+                const mark = techMark(tech);
+                return (
+                  <RevealItem as="li" key={tech}>
+                    <div className="card-box flex h-full flex-col items-center justify-center gap-3 px-3 py-5 text-center">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-[0_2px_8px_-2px_rgba(13,12,21,0.12)]">
+                        {"logo" in mark ? (
+                          <Image src={mark.logo} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+                        ) : (
+                          <mark.icon className="h-5 w-5 text-ink-900" strokeWidth={1.6} aria-hidden="true" />
+                        )}
+                      </span>
+                      <span className="text-[0.9375rem] font-medium leading-snug text-ink-900">{tech}</span>
+                    </div>
+                  </RevealItem>
+                );
+              })}
+            </RevealGroup>
           </div>
         </div>
       </Section>
@@ -283,7 +293,7 @@ export default async function ServicePage({ params }: Params) {
           <Reveal>
             <Link
               href={`/services/${next.slug}`}
-              className="group flex flex-wrap items-center justify-between gap-6 rounded-[var(--radius-lg)] border border-ink-200 p-8 transition-all duration-500 hover:-translate-y-1 hover:border-ink-900 hover:shadow-lg md:p-10"
+              className="group flex flex-wrap items-center justify-between gap-6 card-shape border border-ink-200 p-8 transition-all duration-500 hover:-translate-y-1 hover:border-ink-900 hover:shadow-lg md:p-10"
             >
               <span>
                 <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">

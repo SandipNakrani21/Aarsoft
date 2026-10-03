@@ -4,6 +4,7 @@ import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 
 /**
  * Services on the dark ground. Each practice is a tinted glass card with a
@@ -26,7 +27,7 @@ export function ServicesGrid({
       <div aria-hidden="true" className="brand-grid-dark pointer-events-none absolute inset-0 opacity-60" />
       <div
         aria-hidden="true"
-        className="animate-aurora pointer-events-none absolute -right-40 top-1/4 h-[520px] w-[520px] rounded-full opacity-[0.12] blur-[130px]"
+        className="animate-aurora pointer-events-none absolute -right-40 top-1/4 h-[520px] w-[520px] rounded-full opacity-[0.12] soft-glow"
         style={{ background: "var(--gradient-primary)" }}
       />
 
@@ -46,17 +47,17 @@ export function ServicesGrid({
         )}
 
         <RevealGroup
+          from="top"
           as="ul"
           stagger={0.06}
           className="mt-8 grid gap-x-5 gap-y-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           {list.map((service, i) => {
-            const Icon = service.icon;
             const gradientId = `svc-num-${i}`;
             return (
               /* Top padding leaves room for the number to ride above the card. */
               <RevealItem as="li" key={service.slug} className="pt-10">
-                <Link href={`/services/${service.slug}`} className="svc-card group">
+                <Link href={`/services/${service.slug}`} className="svc-card corner-card group">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 200 110"
@@ -81,13 +82,11 @@ export function ServicesGrid({
                     </text>
                   </svg>
 
-                  <span className="svc-icon">
-                    <Icon className="h-6 w-6" strokeWidth={1.5} aria-hidden="true" />
-                  </span>
-
-                  <h3 className="text-gradient mt-6 w-fit font-display text-2xl font-semibold leading-tight tracking-[-0.025em]">
-                    {service.title}
-                  </h3>
+                  <CardHead
+                    icon={service.icon}
+                    title={service.title}
+                    titleClassName="text-gradient w-fit text-xl font-semibold leading-snug"
+                  />
 
                   <p className="mt-3 flex-1 text-[1.0625rem] leading-relaxed text-ink-300">
                     {service.excerpt}

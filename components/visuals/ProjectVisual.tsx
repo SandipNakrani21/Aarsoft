@@ -34,7 +34,7 @@ export function ProjectVisual({
   return (
     <div
       className={cn(
-        "relative aspect-[16/10] w-full overflow-hidden rounded-[var(--radius-lg)]",
+        "relative aspect-[16/10] w-full overflow-hidden card-shape",
         className,
       )}
       style={{
@@ -54,7 +54,7 @@ export function ProjectVisual({
 
       {/* Window chrome */}
       <div
-        className="absolute inset-x-5 top-5 bottom-0 overflow-hidden rounded-t-[var(--radius-md)] backdrop-blur-sm transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 sm:inset-x-8 sm:top-8"
+        className="absolute inset-x-5 top-5 bottom-0 overflow-hidden rounded-t-[var(--radius-md)] transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1.5 sm:inset-x-8 sm:top-8"
         style={{ backgroundColor: surface, border: `1px solid ${line}` }}
       >
         {/* Title bar */}

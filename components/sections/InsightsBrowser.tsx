@@ -44,7 +44,7 @@ export function InsightsBrowser() {
                   aria-pressed={isActive}
                   className={cn(
                     /* A pill has a background, so it takes the gradient there rather than on the text. */
-                    "btn-gradient relative isolate whitespace-nowrap rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-300",
+                    "btn-gradient relative isolate whitespace-nowrap btn-shape px-3.5 py-2 text-[0.9375rem] transition-colors duration-300",
                     isActive ? "text-white" : "text-ink-500 hover:text-ink-900",
                   )}
                 >
@@ -111,7 +111,7 @@ export function InsightsBrowser() {
               setActive("All");
               setQuery("");
             }}
-            className="mt-6 rounded-[var(--radius-sm)] border border-ink-200 px-4 py-2.5 text-[1.125rem] font-medium text-ink-900 transition-colors hover:border-ink-900"
+            className="mt-6 btn-shape border border-ink-200 px-4 py-2.5 text-[1.125rem] font-medium text-ink-900 transition-colors hover:border-ink-900"
           >
             Reset filters
           </button>

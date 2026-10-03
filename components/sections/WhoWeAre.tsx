@@ -48,6 +48,7 @@ export function WhoWeAre() {
 
           <div>
             <RevealGroup
+              from="right"
               stagger={0.1}
               className="space-y-6 text-[1.25rem] leading-relaxed text-ink-500 md:text-xl"
             >
@@ -92,7 +93,7 @@ export function WhoWeAre() {
                 </Parallax>
                 <div
                   aria-hidden="true"
-                  className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-25 blur-[90px]"
+                  className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-25 soft-glow"
                   style={{ background: "var(--gradient-primary)" }}
                 />
 

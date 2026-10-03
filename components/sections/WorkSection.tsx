@@ -49,7 +49,7 @@ export function WorkSection({ limit }: { limit?: number }) {
                 className="group block h-full"
                 aria-label={`View case study: ${project.title}`}
               >
-                <div className="overflow-hidden rounded-[var(--radius-lg)]">
+                <div className="overflow-hidden card-shape">
                   <ProjectVisual
                     variant={project.visual}
                     accent={project.accent}

@@ -13,7 +13,7 @@ export default function NotFound() {
       <div aria-hidden="true" className="brand-grid mask-fade-b absolute inset-0" />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/4 h-[420px] w-[420px] -translate-x-1/2 rounded-full opacity-[0.15] blur-[110px]"
+        className="pointer-events-none absolute left-1/2 top-1/4 h-[420px] w-[420px] -translate-x-1/2 rounded-full opacity-[0.15] soft-glow"
         style={{ background: "var(--gradient-primary)" }}
       />
 

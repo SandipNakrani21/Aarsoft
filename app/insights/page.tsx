@@ -42,7 +42,7 @@ export default function InsightsPage() {
               <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />
               <div
                 aria-hidden="true"
-                className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full opacity-[0.2] blur-[110px]"
+                className="animate-aurora pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full opacity-[0.2] soft-glow"
                 style={{ background: "var(--gradient-primary)" }}
               />
 

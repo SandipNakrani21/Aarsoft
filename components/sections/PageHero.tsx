@@ -58,7 +58,7 @@ export function PageHero({
       />
       <div
         aria-hidden="true"
-        className="animate-aurora pointer-events-none absolute -right-[10%] -top-[25%] h-[520px] w-[520px] rounded-full opacity-[0.34] blur-[120px]"
+        className="animate-aurora pointer-events-none absolute -right-[10%] -top-[25%] h-[520px] w-[520px] rounded-full opacity-[0.34] soft-glow"
         style={{
           background:
             "linear-gradient(135deg, rgba(193,184,255,0.5) 0%, rgba(254,217,123,1) 100%)",

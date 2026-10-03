@@ -7,6 +7,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { TextRevealOnScroll } from "@/components/ui/TextReveal";
 import { Eyebrow } from "@/components/ui/Section";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 import { Parallax } from "@/components/ui/Parallax";
 import { NodeNetwork } from "@/components/visuals/NodeNetwork";
 import { ProcessSection } from "@/components/sections/ProcessSection";
@@ -131,7 +132,7 @@ export default function AboutPage() {
         <div className="container-x">
           <div className="grid gap-6 lg:grid-cols-2">
             <Reveal>
-              <article className="hairline flex h-full flex-col justify-between rounded-[var(--radius-lg)] bg-white p-9 md:p-12">
+              <article className="hairline flex h-full flex-col justify-between card-shape bg-white p-9 md:p-12">
                 <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
                   Mission
                 </span>
@@ -150,7 +151,7 @@ export default function AboutPage() {
                 <div aria-hidden="true" className="brand-grid-dark absolute inset-0" />
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full opacity-20 blur-[90px]"
+                  className="pointer-events-none absolute -bottom-24 -right-24 h-72 w-72 rounded-full opacity-20 soft-glow"
                   style={{ background: "var(--gradient-primary)" }}
                 />
                 <span className="relative text-[0.8125rem] uppercase tracking-[0.16em] text-lavender">
@@ -183,18 +184,14 @@ export default function AboutPage() {
             className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {values.map((value) => {
-              const Icon = value.icon;
               return (
                 <RevealItem as="li" key={value.title}>
-                  <div className="card-box group p-8">
-                    <Icon
-                      className="h-8 w-8 text-ink-400 transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-ink-900 link-gradient"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
+                  <div className="card-box corner-card group">
+                    <CardHead
+                      icon={value.icon}
+                      title={value.title}
+                      titleClassName="text-2xl text-ink-900"
                     />
-                    <h3 className="mt-6 font-display text-2xl tracking-[-0.025em] text-ink-900">
-                      {value.title}
-                    </h3>
                     <p className="mt-3 text-[1.125rem] leading-relaxed text-ink-500">
                       {value.description}
                     </p>
@@ -226,7 +223,7 @@ export default function AboutPage() {
               <Reveal delay={0.2}>
                 <Parallax offset={24} className="mt-9 hidden lg:block">
                   <div
-                    className="hairline-dark rounded-[var(--radius-md)] p-7"
+                    className="hairline-dark card-shape p-7"
                     style={{ backgroundColor: "rgba(13,12,21,0.6)" }}
                   >
                     <p className="text-[1.0625rem] leading-relaxed text-ink-300">

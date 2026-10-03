@@ -8,6 +8,7 @@ import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { IntroLoader } from "@/components/layout/IntroLoader";
 import { RouteLoader } from "@/components/layout/RouteLoader";
 import { CookieConsent } from "@/components/layout/CookieConsent";
+import { AmbientPause } from "@/components/layout/AmbientPause";
 import { visitedScript } from "@/lib/visit";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { PointerEffects } from "@/components/ui/PointerEffects";
@@ -105,6 +106,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <IntroLoader />
         <RouteLoader />
         <SmoothScroll />
+        <AmbientPause />
         <ScrollProgress />
         <PointerEffects />
         <Navbar />

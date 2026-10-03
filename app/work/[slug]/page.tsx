@@ -206,7 +206,7 @@ export default async function CaseStudyPage({ params }: Params) {
           <Reveal>
             <Link
               href={`/work/${next.slug}`}
-              className="group grid items-center gap-8 rounded-[var(--radius-lg)] border border-ink-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:border-ink-900 hover:shadow-lg md:grid-cols-12 md:p-8"
+              className="group grid items-center gap-8 card-shape border border-ink-200 bg-white p-6 transition-all duration-500 hover:-translate-y-1 hover:border-ink-900 hover:shadow-lg md:grid-cols-12 md:p-8"
             >
               <div className="md:col-span-4">
                 <ProjectVisual variant={next.visual} accent={next.accent} />

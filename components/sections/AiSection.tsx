@@ -54,7 +54,7 @@ export function AiSection() {
       >
         <div
           aria-hidden="true"
-          className="animate-aurora h-[520px] w-[520px] rounded-full opacity-[0.18] blur-[130px]"
+          className="animate-aurora h-[520px] w-[520px] rounded-full opacity-[0.18] soft-glow"
           style={{ background: "var(--gradient-primary)" }}
         />
       </Parallax>
@@ -87,7 +87,7 @@ export function AiSection() {
           </div>
 
           <div className="lg:col-span-6">
-            <RevealGroup as="ul" stagger={0.07} className="space-y-px">
+            <RevealGroup from="right" as="ul" stagger={0.07} className="space-y-px">
               {capabilities.map((item) => (
                 <RevealItem
                   as="li"

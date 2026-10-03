@@ -33,7 +33,7 @@ export function CtaSection({
           {/* Primary brand gradient accent */}
           <div
             aria-hidden="true"
-            className="animate-aurora pointer-events-none absolute -top-1/3 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full opacity-[0.22] blur-[120px]"
+            className="animate-aurora pointer-events-none absolute -top-1/3 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full opacity-[0.22] soft-glow"
             style={{ background: "var(--gradient-primary)" }}
           />
           {/* The grid slides against the scroll, a layer behind the copy. */}

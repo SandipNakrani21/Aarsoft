@@ -3,6 +3,7 @@ import { slugify } from "@/lib/utils";
 import { Section } from "@/components/ui/Section";
 import { SplitHeading } from "@/components/ui/SplitHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
+import { CardHead } from "@/components/ui/CardHead";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 
 export function SolutionsSection({ limit }: { limit?: number }) {
@@ -23,32 +24,23 @@ export function SolutionsSection({ limit }: { limit?: number }) {
         </SplitHeading>
 
         <RevealGroup
+          from="right"
           as="ul"
           stagger={0.055}
           className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
           {list.map((solution) => {
-            const Icon = solution.icon;
             return (
               <RevealItem as="li" key={solution.title}>
                 <article
                   id={slugify(solution.title)}
-                  className="card-box card-box-lift group flex scroll-mt-32 flex-col p-7"
+                  className="card-box card-box-lift corner-card group flex scroll-mt-32 flex-col"
                 >
-                  <span
-                    className="card-icon inline-flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)]"
-                    style={{ background: "var(--color-lavender-soft)" }}
-                  >
-                    <Icon
-                      className="h-7 w-7 text-ink-900"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    />
-                  </span>
-
-                  <h3 className="mt-6 font-display text-2xl tracking-[-0.025em] text-ink-900 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1">
-                    {solution.title}
-                  </h3>
+                  <CardHead
+                    icon={solution.icon}
+                    title={solution.title}
+                    titleClassName="text-2xl text-ink-900"
+                  />
 
                   <p className="mt-3 flex-1 text-[1.125rem] leading-relaxed text-ink-500">
                     {solution.value}

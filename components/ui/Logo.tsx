@@ -14,16 +14,20 @@ import { cn } from "@/lib/utils";
  */
 const ART = {
   wordmark: { src: "/aarsoft-logo-wordmark.webp", width: 1931, height: 573 },
-  full: { src: "/aarsoft-logo.webp", width: 1931, height: 669 },
   /*
-   * The header lockup: "TECHNOLOGIES" set solid in Deep Black. Its twin
-   * carries the same word in white for when the bar sits over a dark
-   * section, where black would vanish.
+   * The brand lockup as supplied: pastel gradient mark and wordmark with
+   * "TECHNOLOGIES" in white, for dark grounds such as the footer.
    */
-  header: { src: "/aarsoft-logo-header.webp", width: 1916, height: 666 },
+  full: { src: "/aarsoft-logo-2026-light.webp", width: 1941, height: 666 },
+  /*
+   * The header lockup on light grounds: the same artwork with "TECHNOLOGIES"
+   * in Deep Black. Its twin (HEADER_ON_DARK, the supplied white version) is
+   * cross-faded in whenever the bar sits over a dark section.
+   */
+  header: { src: "/aarsoft-logo-2026-dark-text.webp", width: 1941, height: 666 },
 } as const;
 
-const HEADER_ON_DARK = "/aarsoft-logo-header-light.webp";
+const HEADER_ON_DARK = "/aarsoft-logo-2026-light.webp";
 
 /**
  * Brand lockup, linked home.

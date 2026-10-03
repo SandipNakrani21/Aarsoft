@@ -4,13 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { mainNav, site } from "@/data/site";
 import { TypewriterButton } from "@/components/ui/TypewriterButton";
+import { MegaMenu } from "./MegaMenu";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import { EASE_OUT } from "@/lib/motion";
 import { useIntroDone } from "@/lib/intro";
+
+/* Layers that can sit over the page without being its ground: the bar, loaders, the cookie notice. */
+const OVERLAYS = "header, .intro-loader, .route-loader, [aria-labelledby='cookie-title']";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -32,44 +36,79 @@ export function Navbar() {
    * and what kind of ground is currently behind it.
    *
    * The bar is thin frosted glass, so the section underneath decides
-   * whether it reads light or dark. Hit-testing the middle of the bar for
-   * a `.dark-section` ancestor is what tells it which, and is why the
-   * links stay readable as black blocks pass beneath. Reading the class
-   * beats sampling pixels: it costs one hit test per frame and it cannot
-   * be fooled by a decorative overlay.
+   * whether it reads light or dark. An IntersectionObserver watches every
+   * `.dark-section` against a one-pixel line through the middle of the bar:
+   * when it signals a change, the few dark sections are checked against the
+   * line directly (and again whenever scrolling comes to rest). The
+   * browser does this work off the scroll path, so scrolling costs nothing
+   * here (the old per-frame hit test forced a layout on every frame).
+   * Loaders and the cookie notice are not sections, so they are never
+   * mistaken for the ground.
    */
   useEffect(() => {
-    let frame = 0;
+    const LINE = 40; // the middle of the bar, docked or floating
+    let lastScrolled: boolean | null = null;
+    let darks: Element[] = [];
 
-    const measure = () => {
-      frame = 0;
-      setScrolled(window.scrollY > 16);
+    let observer: IntersectionObserver | null = null;
+    const findDarks = () =>
+      [...document.querySelectorAll(".dark-section")].filter((el) => !el.closest(OVERLAYS));
 
-      const bar = document.querySelector("header nav");
-      if (!bar) return;
-      const box = bar.getBoundingClientRect();
-      const under = document.elementsFromPoint(
-        Math.round(box.left + box.width / 2),
-        Math.round(box.top + box.height / 2),
-      );
-      /* The bar itself sits at that point; the ground is the first thing below it. */
-      const ground = under.find((el) => !el.closest("header"));
-      setOverDark(Boolean(ground?.closest(".dark-section")));
+    // (Re)attach the observer. Re-run whenever the set of dark sections has
+    // changed: hydration can swap a section for a new element, and an
+    // observer left on the old, detached one would never fire again.
+    const watch = (list = findDarks()) => {
+      observer?.disconnect();
+      darks = list;
+      observer = new IntersectionObserver(() => check(), {
+        rootMargin: `-${LINE}px 0px -${Math.max(0, window.innerHeight - LINE - 1)}px 0px`,
+      });
+      darks.forEach((el) => observer!.observe(el));
     };
 
+    // Checks the dark sections against the line. Runs only when the observer
+    // signals a change or scrolling comes to rest, never per frame. The list
+    // is re-read each time so it can never hold stale elements.
+    const check = () => {
+      const current = findDarks();
+      if (current.length !== darks.length || current.some((el, i) => el !== darks[i])) watch(current);
+      const over = current.some((el) => {
+        const r = el.getBoundingClientRect();
+        return r.top <= LINE && r.bottom > LINE;
+      });
+      setOverDark(over);
+    };
+
+    // Elevation, plus a settle check once scrolling stops so a missed
+    // observer signal can never leave the colours stale.
+    let rest = 0;
     const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(measure);
+      const next = window.scrollY > 16;
+      if (next !== lastScrolled) {
+        lastScrolled = next;
+        setScrolled(next);
+      }
+      window.clearTimeout(rest);
+      rest = window.setTimeout(check, 120);
     };
 
-    measure();
+    onScroll();
+    watch();
+    check();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    // The band depends on the window height; sections can mount after a moment.
+    const onResize = () => { watch(); check(); };
+    window.addEventListener("resize", onResize);
+    const settle = window.setTimeout(check, 600);
+
     return () => {
-      if (frame) cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
+      window.clearTimeout(rest);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", onResize);
+      observer?.disconnect();
     };
-    /* Re-measure on navigation: the new page's first section may differ. */
+    /* Re-watch on navigation: the new page has its own sections. */
   }, [pathname]);
 
   /* Close every menu whenever the route changes. */
@@ -201,7 +240,6 @@ export function Navbar() {
             {mainNav.map((item, i) => {
               const hasMenu = Boolean(item.menu);
               const expanded = menu === item.label;
-              const highlighted = isActive(item.href) || expanded;
               return (
                 <motion.li
                   key={item.href}
@@ -218,14 +256,8 @@ export function Navbar() {
                       /* Slightly tighter below xl, where the bar is at its fullest. */
                       "link-gradient relative rounded-[var(--radius-sm)] py-2 text-[1rem] font-medium xl:text-[1.125rem] transition-colors duration-200",
                       hasMenu ? "pl-2 pr-0.5 xl:pl-3.5" : "px-2 xl:px-3.5",
-                      lightText
-                        ? highlighted
-                          ? "text-white"
-                          : "text-ink-300 hover:text-white"
-                        : cn(
-                            "link-gradient-deep",
-                            highlighted ? "text-ink-900" : "text-ink-500 hover:text-ink-900",
-                          ),
+                      /* Solid white over dark ground, solid black over light; the active page is marked by its underline. */
+                      lightText ? "text-white" : cn("link-gradient-deep", "text-ink-900"),
                     )}
                   >
                     {item.label}
@@ -252,13 +284,7 @@ export function Navbar() {
                       onClick={() => (expanded ? setMenu(null) : openMenu(item.label))}
                       className={cn(
                         "mr-1 inline-flex h-7 w-6 items-center justify-center rounded-md transition-colors xl:mr-2",
-                        lightText
-                          ? highlighted
-                            ? "text-white"
-                            : "text-ink-300 hover:text-white"
-                          : highlighted
-                            ? "text-ink-900"
-                            : "text-ink-500 hover:text-ink-900",
+                        lightText ? "text-white" : "text-ink-900",
                       )}
                     >
                       <ChevronDown
@@ -310,10 +336,11 @@ export function Navbar() {
                 <motion.div
                   key="mega"
                   id="nav-mega"
-                  initial={reduced ? { opacity: 0 } : { opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduced ? { opacity: 0 } : { opacity: 0, y: -6 }}
-                  transition={{ duration: 0.28, ease: EASE_OUT }}
+                  /* Unfolds from its top edge; reduced motion gets a plain fade. */
+                  initial={reduced ? { opacity: 0 } : { opacity: 0, y: -6, clipPath: "inset(0% 0% 100% 0%)" }}
+                  animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" }}
+                  exit={reduced ? { opacity: 0 } : { opacity: 0, y: -6, clipPath: "inset(0% 0% 100% 0%)" }}
+                  transition={{ duration: 0.45, ease: EASE_OUT }}
                   onMouseEnter={cancelClose}
                   onMouseLeave={closeMenuSoon}
                   onBlur={(e) => {
@@ -322,61 +349,13 @@ export function Navbar() {
                   onFocus={cancelClose}
                   className="absolute inset-x-0 top-full hidden pt-3 lg:block"
                 >
-                  <div className="grid grid-cols-12 gap-4 rounded-[var(--radius-lg)] border border-ink-200/70 bg-white p-3 shadow-[0_24px_60px_-20px_rgba(13,12,21,0.35)]">
-                    <div className="col-span-4 flex flex-col rounded-[var(--radius-md)] bg-lavender-faint p-6 xl:col-span-3">
-                      <span className="text-[0.75rem] font-medium uppercase tracking-[0.18em] text-ink-500">
-                        {activeMenu.label}
-                      </span>
-                      <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-700">
-                        {activeMenu.menu.intro}
-                      </p>
-                      <Link
-                        href={activeMenu.href}
-                        onClick={() => setMenu(null)}
-                        className="group mt-auto inline-flex items-center gap-2 pt-6 text-[0.9375rem] font-medium text-ink-900"
-                      >
-                        View all {activeMenu.label.toLowerCase()}
-                        <ArrowRight
-                          className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                          aria-hidden="true"
-                        />
-                      </Link>
-                    </div>
-
-                    <ul
-                      className={cn(
-                        "col-span-8 grid content-start gap-1 py-1 xl:col-span-9",
-                        activeMenu.menu.items.length % 3 === 0 ? "grid-cols-3" : "grid-cols-2",
-                      )}
-                    >
-                      {activeMenu.menu.items.map((sub) => {
-                        const Icon = sub.icon;
-                        return (
-                          <li key={sub.href}>
-                            <Link
-                              href={sub.href}
-                              onClick={() => setMenu(null)}
-                              className="group flex items-start gap-3.5 rounded-[var(--radius-md)] p-3 outline-none transition-colors duration-200 hover:bg-lavender-faint focus-visible:bg-lavender-faint"
-                            >
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-lavender-soft text-ink-700 transition-colors duration-200 group-hover:bg-ink-900 group-hover:text-lavender">
-                                <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden="true" />
-                              </span>
-                              <span className="min-w-0 pt-0.5">
-                                <span className="block text-[0.9375rem] font-medium leading-snug text-ink-900">
-                                  {sub.label}
-                                </span>
-                                {sub.description && (
-                                  <span className="mt-0.5 line-clamp-2 text-[0.8125rem] leading-snug text-ink-500">
-                                    {sub.description}
-                                  </span>
-                                )}
-                              </span>
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
+                  <MegaMenu
+                    label={activeMenu.label}
+                    href={activeMenu.href}
+                    menu={activeMenu.menu}
+                    reduced={Boolean(reduced)}
+                    onNavigate={() => setMenu(null)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

@@ -6,9 +6,9 @@ import { markIntroDone } from "@/lib/intro";
 import { VISITED_KEY, isReturningVisit, writeStorage } from "@/lib/visit";
 
 /* Never shorter than this, so the reveal reads as intended rather than a flicker. */
-const MIN_MS = 1000;
+const MIN_MS = 700;
 /* Never longer than this, however slow the network: the loader cannot hold the page. */
-const MAX_MS = 2200;
+const MAX_MS = 1600;
 /* Length of the split-open exit, after which the loader unmounts. */
 const EXIT_MS = 1100;
 
@@ -136,8 +136,8 @@ export function IntroLoader() {
         <div className="intro-logo">
           {/* Same source and size as the header logo, so it is one shared download. */}
           <Image
-            src="/aarsoft-logo-header-light.webp"
-            width={1916}
+            src="/aarsoft-logo-2026-light.webp"
+            width={1941}
             height={666}
             priority
             alt=""

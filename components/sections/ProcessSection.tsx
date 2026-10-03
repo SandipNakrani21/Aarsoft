@@ -37,6 +37,7 @@ export function ProcessSection() {
         </SplitHeading>
 
         <RevealGroup
+          from="left"
           as="ol"
           stagger={0.12}
           className="mt-12 grid gap-8 md:mt-16 lg:grid-cols-5 lg:gap-6"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducedMotion, type Variants, type HTMLMotionProps } from "framer-motion";
-import type { ElementType, ReactNode } from "react";
+import { createContext, useContext, type ElementType, type ReactNode } from "react";
 import { resolveMotionTag } from "./motionTags";
 import { useReveal } from "@/hooks/useReveal";
 import { EASE_OUT, revealTransition, staggerItem } from "@/lib/motion";
@@ -91,6 +91,32 @@ const containerVariants: Variants = {
 
 const itemVariants = staggerItem;
 
+/**
+ * Where a group's items enter from. `bottom` is the default rise; the others
+ * slide in from that side, so a section can pick its own direction.
+ */
+export type RevealFrom = "bottom" | "top" | "left" | "right";
+
+const FROM_OFFSET: Record<Exclude<RevealFrom, "bottom">, { x?: number; y?: number }> = {
+  top: { y: -48 },
+  left: { x: -64 },
+  right: { x: 64 },
+};
+
+const slideIn = (from: Exclude<RevealFrom, "bottom">): Variants => ({
+  hidden: { opacity: 0, ...FROM_OFFSET[from] },
+  visible: { opacity: 1, x: 0, y: 0, transition: revealTransition(0, 0.8) },
+});
+
+const FROM_VARIANTS: Record<RevealFrom, Variants> = {
+  bottom: itemVariants,
+  top: slideIn("top"),
+  left: slideIn("left"),
+  right: slideIn("right"),
+};
+
+const RevealFromContext = createContext<RevealFrom>("bottom");
+
 /*
  * A second tier of stagger inside an item — the chips on a technology card,
  * say. It inherits the group's "visible" signal, so it needs no trigger of
@@ -111,11 +137,14 @@ export function RevealGroup({
   className,
   stagger = 0.08,
   as = "div",
+  from = "bottom",
 }: {
   children: ReactNode;
   className?: string;
   stagger?: number;
   as?: ElementType;
+  /** Side the items enter from. Defaults to a short rise from below. */
+  from?: RevealFrom;
 }) {
   const reduced = useReducedMotion();
   const { ref, shown } = useReveal<HTMLDivElement>(!reduced);
@@ -128,16 +157,18 @@ export function RevealGroup({
   const MotionTag = resolveMotionTag(as as string);
 
   return (
-    <MotionTag
-      ref={ref}
-      className={className}
-      variants={containerVariants}
-      custom={stagger}
-      initial="hidden"
-      animate={shown ? "visible" : "hidden"}
-    >
-      {children}
-    </MotionTag>
+    <RevealFromContext.Provider value={from}>
+      <MotionTag
+        ref={ref}
+        className={className}
+        variants={containerVariants}
+        custom={stagger}
+        initial="hidden"
+        animate={shown ? "visible" : "hidden"}
+      >
+        {children}
+      </MotionTag>
+    </RevealFromContext.Provider>
   );
 }
 
@@ -152,6 +183,7 @@ export function RevealItem({
   as?: ElementType;
 }) {
   const reduced = useReducedMotion();
+  const from = useContext(RevealFromContext);
 
   if (reduced) {
     const Tag = as as ElementType;
@@ -161,7 +193,7 @@ export function RevealItem({
   const MotionTag = resolveMotionTag(as as string);
 
   return (
-    <MotionTag className={className} variants={itemVariants}>
+    <MotionTag className={className} variants={FROM_VARIANTS[from]}>
       {children}
     </MotionTag>
   );

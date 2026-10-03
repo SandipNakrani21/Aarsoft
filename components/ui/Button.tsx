@@ -6,28 +6,29 @@ type Variant = "primary" | "secondary" | "ghost" | "onDark" | "onDarkGhost";
 type Size = "md" | "lg";
 
 /*
- * Every button shares one hover behaviour: the brand gradient wipes in from
- * a `::before` layer underneath the label, so the text colour can flip
- * independently and the transition stays smooth. `isolate` keeps the layer
- * behind the content without needing a z-index on every child.
+ * The site button: an outline with two slanted gaps cut into it (see
+ * `.btn-cut` in globals.css). On hover the brand gradient wipes in on a
+ * slant, the outline fades into it and the label turns dark. Variants set
+ * the outline and label colours; main buttons carry a stronger outline than
+ * secondary ones, so the hierarchy survives without a solid fill.
  */
 const base =
-  "btn-gradient group/btn relative isolate inline-flex items-center justify-center gap-2.5 font-medium " +
-  "rounded-[var(--radius-sm)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] " +
+  "btn-cut group/btn relative isolate inline-flex items-center justify-center gap-2.5 font-medium " +
+  "btn-shape transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] " +
   "whitespace-nowrap select-none disabled:opacity-50 disabled:pointer-events-none " +
-  "hover:-translate-y-0.5";
+  "hover:-translate-y-0.5 hover:text-ink-900 focus-visible:text-ink-900";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-ink-900 text-white hover:text-ink-900 hover:shadow-[0_14px_30px_-10px_rgba(193,184,255,0.6)]",
+    "font-semibold text-ink-900 hover:shadow-[0_14px_30px_-10px_rgba(193,184,255,0.6)]",
   secondary:
-    "bg-white text-ink-900 border border-ink-200 hover:border-transparent hover:shadow-[0_14px_30px_-12px_rgba(193,184,255,0.7)]",
+    "text-ink-900 [--btn-line:var(--color-ink-300)] hover:shadow-[0_14px_30px_-12px_rgba(193,184,255,0.7)]",
   ghost:
-    "text-ink-700 hover:text-ink-900 hover:shadow-[0_10px_24px_-12px_rgba(193,184,255,0.6)]",
+    "text-ink-700 [--btn-line:var(--color-ink-200)] hover:shadow-[0_10px_24px_-12px_rgba(193,184,255,0.6)]",
   onDark:
-    "bg-white text-ink-900 hover:shadow-[0_14px_30px_-10px_rgba(193,184,255,0.55)]",
+    "font-semibold text-white [--btn-line:var(--color-white)] hover:shadow-[0_14px_30px_-10px_rgba(193,184,255,0.55)]",
   onDarkGhost:
-    "text-white border border-[rgba(193,184,255,0.28)] hover:border-transparent hover:text-ink-900",
+    "text-white [--btn-line:rgba(193,184,255,0.5)] hover:shadow-[0_14px_30px_-10px_rgba(193,184,255,0.45)]",
 };
 
 const sizes: Record<Size, string> = {

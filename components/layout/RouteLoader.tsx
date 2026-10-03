@@ -7,12 +7,14 @@ import { markIntroDone } from "@/lib/intro";
 import { isReturningVisit } from "@/lib/visit";
 
 /* Shown at least this long, so it reads as a transition rather than a flicker. */
-const MIN_MS = 450;
+const MIN_MS = 250;
 /* Never held longer than this, however slow the page or the route is. */
-const MAX_BOOT_MS = 1600;
+const MAX_BOOT_MS = 1000;
 const MAX_NAV_MS = 5000;
 /* Length of the fade out. */
 const EXIT_MS = 400;
+/* A page change shows the loader only if it takes longer than this: fast ones never flash it. */
+const NAV_SHOW_DELAY_MS = 160;
 
 type Phase = "boot" | "nav" | "leaving" | "idle";
 
@@ -40,6 +42,8 @@ export function RouteLoader() {
     setPhaseState(next);
   };
   const startedAt = useRef(0);
+  // A click is waiting to see whether the page change is fast enough to skip the loader.
+  const pending = useRef(false);
   const timers = useRef<number[]>([]);
 
   const later = (fn: () => void, ms: number) => {
@@ -94,9 +98,13 @@ export function RouteLoader() {
       if (url.pathname === window.location.pathname) return;
 
       clearTimers();
-      startedAt.current = performance.now();
-      setPhase("nav");
-      later(leave, MAX_NAV_MS);
+      pending.current = true;
+      later(() => {
+        if (!pending.current) return;
+        startedAt.current = performance.now();
+        setPhase("nav");
+        later(leave, MAX_NAV_MS);
+      }, NAV_SHOW_DELAY_MS);
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
@@ -105,6 +113,13 @@ export function RouteLoader() {
 
   // The new route has rendered: fade out, after the minimum time on screen.
   useEffect(() => {
+    // Arrived before the loader was due: cancel it, nothing was shown.
+    if (pending.current && phaseRef.current !== "nav") {
+      pending.current = false;
+      clearTimers();
+      return;
+    }
+    pending.current = false;
     if (phaseRef.current !== "nav") return;
     const shown = performance.now() - startedAt.current;
     clearTimers();

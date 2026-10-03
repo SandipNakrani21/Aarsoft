@@ -227,7 +227,7 @@ export function WhyAarsoftSystem() {
               <motion.path
                 key={d}
                 d={d}
-                stroke="var(--color-ink-200)"
+                stroke="rgba(193,184,255,0.2)"
                 strokeWidth={1}
                 fill="none"
                 initial={still ? false : { pathLength: 0 }}
@@ -366,7 +366,7 @@ export function WhyAarsoftSystem() {
           </motion.div>
 
           {/* The six capabilities: labels around the circle on desktop, a rail when stacked. */}
-          <span aria-hidden="true" className="absolute bottom-6 left-6 top-6 w-px bg-ink-200 lg:hidden" />
+          <span aria-hidden="true" className="absolute bottom-6 left-6 top-6 w-px bg-[rgba(193,184,255,0.2)] lg:hidden" />
           <ul ref={listRef} className="relative space-y-8 lg:static lg:space-y-0">
             {differentiators.map((item, i) => {
               const Icon = item.icon;
@@ -388,7 +388,7 @@ export function WhyAarsoftSystem() {
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "relative z-[1] flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white transition-shadow duration-500 lg:hidden",
+                      "relative z-[1] flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[rgba(193,184,255,0.3)] bg-ink-900 text-white transition-shadow duration-500 lg:hidden",
                       state === "active" && "shadow-[0_0_0_4px_var(--color-lavender)]",
                     )}
                   >
@@ -396,18 +396,18 @@ export function WhyAarsoftSystem() {
                   </span>
 
                   <div className={cn("transition-opacity duration-500", state === "dim" && "opacity-[0.62]")}>
-                    <span className="block text-[0.8125rem] tracking-[0.14em] text-ink-400">
+                    <span className="block text-[0.8125rem] tracking-[0.14em] text-lavender">
                       {pad(i + 1)}
                     </span>
                     <h3
                       className={cn(
-                        "why-title mt-1 font-display text-xl leading-tight tracking-[-0.02em] text-ink-900 xl:text-[1.375rem]",
+                        "why-title mt-1 font-display text-xl leading-tight tracking-[-0.02em] text-white xl:text-[1.375rem]",
                         state === "active" && "why-title-lit",
                       )}
                     >
                       <span className="why-title-text">{item.title}</span>
                     </h3>
-                    <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-ink-500 lg:max-w-[18.5rem]">
+                    <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-ink-300 lg:max-w-[18.5rem]">
                       {item.description}
                     </p>
                   </div>

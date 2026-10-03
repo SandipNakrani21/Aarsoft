@@ -20,6 +20,7 @@ export function Testimonials() {
         </SplitHeading>
 
         <RevealGroup
+          from="top"
           as="ul"
           stagger={0.09}
           className="mt-10 grid gap-5 md:grid-cols-3"

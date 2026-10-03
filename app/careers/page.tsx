@@ -6,6 +6,7 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Reveal, RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
+import { CardHead } from "@/components/ui/CardHead";
 import { values } from "@/data/company";
 import { CtaSection } from "@/components/sections/CtaSection";
 
@@ -107,18 +108,14 @@ export default function CareersPage() {
             className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {values.map((value) => {
-              const Icon = value.icon;
               return (
                 <RevealItem as="li" key={value.title}>
-                  <div className="card-box group p-8">
-                    <Icon
-                      className="h-8 w-8 text-ink-400 transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-ink-900 link-gradient"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
+                  <div className="card-box corner-card group">
+                    <CardHead
+                      icon={value.icon}
+                      title={value.title}
+                      titleClassName="text-2xl text-ink-900"
                     />
-                    <h3 className="mt-6 font-display text-2xl tracking-[-0.025em] text-ink-900">
-                      {value.title}
-                    </h3>
                     <p className="mt-3 text-[1.125rem] leading-relaxed text-ink-500">
                       {value.description}
                     </p>
@@ -146,24 +143,11 @@ export default function CareersPage() {
             className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {benefits.map((benefit) => {
-              const Icon = benefit.icon;
               return (
                 <RevealItem as="li" key={benefit.title}>
-                  <article className="card-box p-7">
-                    <span
-                      className="inline-flex h-14 w-14 items-center justify-center rounded-[var(--radius-sm)]"
-                      style={{ background: "var(--color-gold-soft)" }}
-                    >
-                      <Icon
-                        className="h-7 w-7 text-ink-900"
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <h3 className="mt-6 font-display text-xl tracking-[-0.02em] text-ink-900">
-                      {benefit.title}
-                    </h3>
-                    <p className="mt-2.5 text-[1.125rem] leading-relaxed text-ink-500">
+                  <article className="card-box corner-card group">
+                    <CardHead icon={benefit.icon} title={benefit.title} />
+                    <p className="mt-3 text-[1.125rem] leading-relaxed text-ink-500">
                       {benefit.description}
                     </p>
                   </article>

@@ -93,7 +93,7 @@ export function HeroPanel({
         };
 
   const card =
-    "rounded-[var(--radius-md)] border border-[rgba(193,184,255,0.22)] bg-[rgba(13,12,21,0.62)] backdrop-blur-xl";
+    "card-shape border border-[rgba(193,184,255,0.22)] bg-[rgba(13,12,21,0.62)] backdrop-blur-xl";
 
   return (
     <div className="relative mx-auto flex max-w-md flex-col gap-5 lg:max-w-none">
