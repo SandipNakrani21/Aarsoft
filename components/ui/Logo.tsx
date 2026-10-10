@@ -77,7 +77,8 @@ export function Logo({
           src={art.src}
           width={art.width}
           height={art.height}
-          priority={priority}
+          priority={priority && !onDark}
+          sizes="(min-width: 1920px) 204px, 164px"
           alt=""
           className={cn(imageClass, onDark && "opacity-0")}
         />
@@ -85,7 +86,8 @@ export function Logo({
           src={HEADER_ON_DARK}
           width={art.width}
           height={art.height}
-          priority={priority}
+          priority={priority && onDark}
+          sizes="(min-width: 1920px) 204px, 164px"
           alt=""
           className={cn(imageClass, "absolute left-0 top-1/2 -translate-y-1/2", !onDark && "opacity-0")}
         />
@@ -104,6 +106,7 @@ export function Logo({
         width={art.width}
         height={art.height}
         priority={priority}
+        sizes="(min-width: 768px) 240px, 180px"
         /* The link is already labelled, so the art is decorative here. */
         alt=""
         className={cn(

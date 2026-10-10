@@ -6,7 +6,7 @@ import { RevealGroup, RevealItem, RevealSubItem } from "@/components/ui/Reveal";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { CardHead } from "@/components/ui/CardHead";
 
-export function TechStack() {
+export function TechStack({ directory = false }: { directory?: boolean }) {
   return (
     <Section id="technology">
       <div className="container-x">
@@ -15,10 +15,10 @@ export function TechStack() {
           lines={["The Stack", "We Build On."]}
           description="Current, well-supported technology chosen for longevity, and for teams that need to hire against it later."
         >
-          <ButtonLink href="/services" variant="secondary">
+          {!directory && <ButtonLink href="/services" variant="secondary">
             Explore technology
             <ArrowIcon />
-          </ButtonLink>
+          </ButtonLink>}
         </SplitHeading>
 
         {/* Capability cards: icon tab in the top-left corner, title beside it. */}

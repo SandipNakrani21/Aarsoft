@@ -1,84 +1,44 @@
 "use client";
-
-import Lenis from "lenis";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-
-/**
- * Momentum smooth scrolling via Lenis, driven by requestAnimationFrame.
- *
- * Two behaviours matter here:
- *  - Users who prefer reduced motion never get the hijacked scroll at all.
- *  - Same-page anchor links are routed through Lenis so they ease rather
- *    than jump, while cross-page navigation resets to the top instantly.
- */
+import type Lenis from "lenis";
+function focusTarget(target: HTMLElement, smooth: boolean) {
+  if (!target.matches("a, button, input, select, textarea, [tabindex]")) target.tabIndex = -1;
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: smooth ? "smooth" : "instant", block: "start" });
+}
+/** Native scrolling preserves touch behavior and browser history restoration. */
 export function SmoothScroll() {
   const pathname = usePathname();
-
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    const lenis = new Lenis({
-      /*
-       * Interpolated scrolling: each frame closes 10% of the gap to the target,
-       * so the page glides and keeps gliding while the wheel keeps turning,
-       * which also drives the scroll-linked section entrances evenly.
-       */
-      lerp: 0.1,
-      orientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 1.6,
-      syncTouch: false,
-      autoResize: true,
-    });
-
-    // Expose for anchor handling and the mobile menu scroll lock.
-    window.__lenis = lenis;
-
-    let frame = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
-
-    const onAnchorClick = (event: MouseEvent) => {
-      const anchor = (event.target as HTMLElement | null)?.closest?.("a");
-      if (!anchor) return;
-
-      const href = anchor.getAttribute("href");
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = (event.target as HTMLElement)?.closest?.("a");
+      const href = anchor?.getAttribute("href");
       if (!href?.startsWith("#") || href === "#") return;
-
-      const target = document.querySelector(href);
+      let id: string;
+      try { id = decodeURIComponent(href.slice(1)); } catch { return; }
+      const target = document.getElementById(id);
       if (!target) return;
-
       event.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -96, duration: 1.2 });
-      history.replaceState(null, "", href);
+      if (location.hash !== href) history.pushState(null, "", href);
+      focusTarget(target, !id.startsWith("field-") && id !== "main" && !matchMedia("(prefers-reduced-motion: reduce)").matches);
     };
-
-    document.addEventListener("click", onAnchorClick);
-
-    return () => {
-      document.removeEventListener("click", onAnchorClick);
-      cancelAnimationFrame(frame);
-      lenis.destroy();
-      delete window.__lenis;
-    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, []);
-
-  // Reset scroll position on route change; Lenis keeps its own offset.
   useEffect(() => {
-    window.__lenis?.scrollTo(0, { immediate: true });
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        if (!location.hash) return;
+        try {
+          const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+          if (target) focusTarget(target, false);
+        } catch { /* Ignore malformed hashes. */ }
+      });
+    });
+    return () => cancelAnimationFrame(frame);
   }, [pathname]);
-
   return null;
 }
-
-declare global {
-  interface Window {
-    __lenis?: Lenis;
-  }
-}
+declare global { interface Window { __lenis?: Lenis; } }

@@ -99,8 +99,7 @@ export function Footer() {
           ))}
 
           {/* Contact column */}
-          {/* Never shrinks, so the email and the social row always hold one line. */}
-          <RevealItem className="md:col-span-2 lg:flex-none">
+          <RevealItem className="min-w-0 md:col-span-2 lg:flex-[0_1_17rem]">
             <h2 className="text-[0.875rem] font-semibold uppercase tracking-[0.16em] text-lavender lg:text-[0.75rem] lg:tracking-[0.12em] xl:text-[0.8125rem] xl:tracking-[0.16em]">
               Contact
             </h2>
@@ -108,7 +107,7 @@ export function Footer() {
               <li>
                 <a
                   href={`mailto:${site.contact.email}`}
-                  className="link-rise link-rise-flat transition-colors duration-200 hover:text-white"
+                  className="link-rise link-rise-flat break-words transition-colors duration-200 hover:text-white"
                 >
                   {site.contact.email}
                 </a>
@@ -121,6 +120,8 @@ export function Footer() {
                   {site.contact.phone}
                 </a>
               </li>
+              <li className="max-w-[28ch]">{site.contact.location}</li>
+              <li>{site.contact.workingHours}</li>
             </ul>
 
             {/* Social icons sit with the rest of the ways to reach us: three across, five in two rows. */}
@@ -261,7 +262,7 @@ export function Footer() {
          * legal links sit right. A two-item flex would centre it between
          * the two instead.
          */}
-        <div className="grid gap-3 border-t border-[rgba(193,184,255,0.14)] py-4 text-center text-[1.0625rem] text-ink-400 sm:grid-cols-3 sm:items-center">
+        <div className="grid gap-3 border-t border-[rgba(193,184,255,0.14)] py-4 text-center text-[1.0625rem] text-ink-500 sm:grid-cols-3 sm:items-center">
           <span aria-hidden="true" className="hidden sm:block" />
           <p>
             © {year} {site.name}. All rights reserved.

@@ -11,7 +11,7 @@ export function Testimonials() {
         <SplitHeading
           eyebrow="Testimonials"
           lines={["What Working With", "Us Sounds Like."]}
-          description="What the people who commissioned these platforms say about working with the team that built them."
+          description="Illustrative feedback for demonstration purposes. These sample quotes are not verified client endorsements."
         >
           <ButtonLink href="/work" variant="secondary">
             View our work
@@ -50,7 +50,7 @@ export function Testimonials() {
                     {t.initials}
                   </span>
                   <span className="text-[1.125rem]">
-                    <span className="block font-medium text-ink-900">{t.name}</span>
+                    <span className="block font-medium text-ink-900">{t.name} — sample</span>
                     <span className="block text-ink-500">
                       {t.role}, {t.company}
                     </span>

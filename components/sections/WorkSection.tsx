@@ -15,7 +15,7 @@ export function WorkSection({ limit }: { limit?: number }) {
           <SectionHeading
             eyebrow="What we do"
             lines={["Digital Products Built", "for Real-World Business."]}
-            description="Platforms delivered across manufacturing, travel, healthcare and logistics, each one walked through from the problem to the decisions behind it."
+            description="Demonstration platforms across manufacturing, travel, healthcare and logistics, each one walked through from the problem to the decisions behind it."
             className="max-w-3xl"
           />
           {limit && (
@@ -30,9 +30,8 @@ export function WorkSection({ limit }: { limit?: number }) {
 
         <Reveal delay={0.05}>
           <p className="mt-6 max-w-[62ch] text-[1.125rem] text-ink-500">
-            A selection of the platforms we have delivered, spanning a range of
-            industries and business needs. Client names are withheld, and the
-            outcomes describe what each platform does rather than claimed figures.
+            A selection of the demonstration platforms, spanning a range of
+            industries and business needs. These are demonstration builds, not client engagements; outcomes describe capabilities rather than measured results.
           </p>
         </Reveal>
 
@@ -59,8 +58,8 @@ export function WorkSection({ limit }: { limit?: number }) {
 
                 <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
                   <div className="max-w-[58ch]">
-                    <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-400">
-                      {project.category}
+                    <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-500">
+                      {project.category} · Demonstration
                     </span>
                     <h3 className="fluid-h3 mt-2.5 text-ink-900">{project.title}</h3>
                     <p className="mt-2.5 text-[1.125rem] leading-relaxed text-ink-500">

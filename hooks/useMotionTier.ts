@@ -1,38 +1,26 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useReducedMotion } from "framer-motion";
-
-/**
- * How much motion this device should get.
- *
- *  - `full`    Desktop with a precise pointer: parallax, magnetic buttons,
- *              pointer-reactive depth and the cursor ring.
- *  - `lite`    Touch, tablet and small screens: entrance reveals and
- *              touch-friendly card feedback only. Nothing is tied to scroll
- *              position, so there are no per-frame calculations on phones.
- *  - `none`    The visitor prefers reduced motion.
- *
- * It starts at `lite` on the server and on the first client render, so the
- * markup never differs between the two and there is no hydration mismatch;
- * desktop upgrades itself immediately after mount.
- */
+import { useSyncExternalStore } from "react";
 export type MotionTier = "full" | "lite" | "none";
-
-const FULL_QUERY = "(min-width: 1024px) and (hover: hover) and (pointer: fine)";
-
-export function useMotionTier(): MotionTier {
-  const reduced = useReducedMotion();
-  const [full, setFull] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia(FULL_QUERY);
-    const update = () => setFull(query.matches);
+const subscribers = new Set<() => void>();
+let queries: MediaQueryList[] = [];
+let tier: MotionTier = "lite";
+function update() {
+  tier = queries[0]?.matches ? "none" : queries[1]?.matches ? "full" : "lite";
+  subscribers.forEach(fn => fn());
+}
+function subscribe(fn: () => void) {
+  if (!subscribers.size) {
+    queries = [matchMedia("(prefers-reduced-motion: reduce)"), matchMedia("(min-width: 1024px) and (hover: hover) and (pointer: fine)")];
+    queries.forEach(q => q.addEventListener("change", update));
     update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  if (reduced) return "none";
-  return full ? "full" : "lite";
+  }
+  subscribers.add(fn);
+  return () => {
+    subscribers.delete(fn);
+    if (!subscribers.size) { queries.forEach(q => q.removeEventListener("change", update)); queries = []; }
+  };
+}
+/** One pair of capability listeners shared by all motion consumers. */
+export function useMotionTier(): MotionTier {
+  return useSyncExternalStore(subscribe, () => tier, () => "lite");
 }

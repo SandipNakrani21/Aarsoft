@@ -23,14 +23,13 @@ import { useMotionTier } from "@/hooks/useMotionTier";
  * smaller screens and reduced motion render the section untouched. The
  * wrapper is always the same element, so a tier change never remounts it.
  */
-export function ScrollScene({
+function FullScrollScene({
   children,
   variant = "rise",
 }: {
   children: ReactNode;
   variant?: "rise" | "panel";
 }) {
-  const tier = useMotionTier();
   const ref = useRef<HTMLDivElement>(null);
   const [moving, setMoving] = useState(false);
 
@@ -52,7 +51,7 @@ export function ScrollScene({
   const opacity = useTransform(progress, [0, 0.55], [0, 1]);
   const scale = useTransform(progress, [0, 1], [0.95, 1]);
 
-  const active = tier === "full";
+  const active = true;
   const style = !active
     ? undefined
     : variant === "panel"
@@ -64,4 +63,9 @@ export function ScrollScene({
       {children}
     </motion.div>
   );
+}
+
+export function ScrollScene(props: { children: ReactNode; variant?: "rise" | "panel" }) {
+  const tier = useMotionTier();
+  return tier === "full" ? <FullScrollScene {...props} /> : <div className="scroll-scene">{props.children}</div>;
 }

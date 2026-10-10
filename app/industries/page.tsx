@@ -57,7 +57,7 @@ export default function IndustriesPage() {
         </div>
       </PageHero>
 
-      <IndustriesSection />
+      <IndustriesSection directory />
 
       <Section tone="surface">
         <div className="container-x">
@@ -72,7 +72,7 @@ export default function IndustriesPage() {
             {approach.map((item, i) => (
               <RevealItem as="li" key={item.title}>
                 <article className="card-box p-8">
-                  <span className="text-[0.8125rem] tracking-[0.14em] text-ink-400">
+                  <span className="text-[0.8125rem] tracking-[0.14em] text-ink-500">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="fluid-h3 mt-7 text-ink-900">{item.title}</h3>

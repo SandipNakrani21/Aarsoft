@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { mainNav, site } from "@/data/site";
+import { mainNav } from "@/data/navigation";
+import { site } from "@/lib/site-config";
+import { navigationIcon } from "@/components/ui/NavigationIcon";
 import { TypewriterButton } from "@/components/ui/TypewriterButton";
 import { MegaMenu } from "./MegaMenu";
 import { Logo } from "@/components/ui/Logo";
@@ -26,6 +28,8 @@ export function Navbar() {
   const [menu, setMenu] = useState<string | null>(null);
   /* Label of the mobile accordion group currently expanded, if any. */
   const [mobileGroup, setMobileGroup] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reduced = useReducedMotion();
   /* The bar enters as the intro loader opens, not unseen behind it. */
@@ -117,19 +121,40 @@ export function Navbar() {
     setMenu(null);
   }, [pathname]);
 
-  /* Lock scrolling behind the mobile menu, including Lenis. */
+  /* Modal focus, background isolation and scroll-lock cleanup. */
   useEffect(() => {
-    if (open) {
-      window.__lenis?.stop();
-      document.body.style.overflow = "hidden";
-    } else {
-      window.__lenis?.start();
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+    const trigger = triggerRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const background = [...document.querySelectorAll<HTMLElement>("body > main, body > footer, body > header")];
+    const previous = background.map(el => el.inert);
+    background.forEach(el => { el.inert = true; });
+    const frame = requestAnimationFrame(() => dialogRef.current?.querySelector<HTMLElement>("button, a")?.focus());
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const controls = [...(dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]') ?? [])].filter(el => el.getClientRects().length > 0);
+      const first = controls[0]; const last = controls[controls.length - 1];
+      if (!first) { event.preventDefault(); return; }
+      if (!dialogRef.current?.contains(document.activeElement) || (event.shiftKey && document.activeElement === first)) {
+        event.preventDefault(); (event.shiftKey ? last : first).focus();
+      } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      cancelAnimationFrame(frame);
+      document.body.style.overflow = previousOverflow;
+      background.forEach((el,i) => { el.inert = previous[i]; });
+      document.removeEventListener("keydown", onKey);
+      if (trigger?.getClientRects().length) trigger.focus();
     };
   }, [open]);
+  useEffect(() => {
+    const desktop = matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   /* Escape closes either menu. */
   useEffect(() => {
@@ -170,7 +195,7 @@ export function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   /* Light text whenever the ground behind the bar is dark, docked or not. */
-  const lightText = overDark;
+  const lightText = overDark && !open;
 
   /*
    * First-load entrance: logo, then links in a quick stagger, then the call
@@ -183,7 +208,7 @@ export function Navbar() {
     reduced
       ? {}
       : {
-          initial: { opacity: 0, y: -8 },
+          initial: false as const,
           animate: introDone ? { opacity: 1, y: 0 } : undefined,
           transition: { duration: 0.6, delay, ease: EASE_OUT },
         };
@@ -311,6 +336,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setOpen((v) => !v)}
+              ref={triggerRef}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
@@ -367,12 +393,23 @@ export function Navbar() {
         {open && (
           <motion.div
             id="mobile-menu"
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Main navigation"
+            onClick={(event) => {
+              if ((event.target as HTMLElement).closest("a")) setOpen(false);
+            }}
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduced ? { opacity: 0 } : { opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-40 flex flex-col bg-white pt-[var(--nav-h)] lg:hidden"
+            className="fixed inset-0 z-[60] flex flex-col bg-white pt-[var(--nav-h)] lg:hidden"
           >
+            <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="absolute right-4 top-4 z-10 flex h-12 w-12 items-center justify-center rounded-md border border-ink-200 text-ink-900"><X aria-hidden="true" className="h-5 w-5" /></button>
+            <div className="absolute left-5 top-4 z-10">
+              <Logo variant="header" imageClassName="h-12" />
+            </div>
             <div className="brand-grid pointer-events-none absolute inset-0 opacity-60" />
 
             <div className="container-x relative flex flex-1 flex-col overflow-y-auto pb-10 pt-8">
@@ -394,6 +431,7 @@ export function Navbar() {
                       <div className="flex items-center justify-between gap-4">
                         <Link
                           href={item.href}
+                          onClick={() => setOpen(false)}
                           className="flex-1 py-4 font-display text-3xl tracking-[-0.03em] text-ink-900"
                         >
                           {item.label}
@@ -416,7 +454,7 @@ export function Navbar() {
                             />
                           </button>
                         ) : (
-                          <span className="text-xs text-ink-400">
+                          <span className="text-xs text-ink-500">
                             {String(i + 1).padStart(2, "0")}
                           </span>
                         )}
@@ -434,7 +472,7 @@ export function Navbar() {
                           >
                             <ul className="grid gap-0.5 pb-4">
                               {item.menu.items.map((sub) => {
-                                const Icon = sub.icon;
+                                const Icon = navigationIcon(sub.icon);
                                 return (
                                   <li key={sub.href}>
                                     <Link

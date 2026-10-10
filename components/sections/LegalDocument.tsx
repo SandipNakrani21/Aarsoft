@@ -11,7 +11,7 @@ export function LegalDocument({
       {/* Contents */}
       <nav aria-label="On this page" className="lg:col-span-3">
         <div className="lg:sticky lg:top-32">
-          <h2 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+          <h2 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
             On this page
           </h2>
           <ul className="mt-5 space-y-2.5">

@@ -22,23 +22,6 @@ type RevealProps = {
   className?: string;
 } & Omit<HTMLMotionProps<"div">, "children" | "variants" | "initial" | "animate">;
 
-const offset = (direction: Direction, distance: number) => {
-  switch (direction) {
-    case "up":
-      return { y: distance };
-    case "down":
-      return { y: -distance };
-    case "left":
-      return { x: distance };
-    case "right":
-      return { x: -distance };
-    case "scale":
-      return { scale: 0.96, y: distance * 0.5 };
-    default:
-      return {};
-  }
-};
-
 /**
  * Scroll-triggered entrance. Every animated section on the site funnels
  * through this component so timing and easing stay consistent, and so
@@ -46,20 +29,20 @@ const offset = (direction: Direction, distance: number) => {
  */
 export function Reveal({
   children,
-  direction = "up",
+  direction: _direction = "up",
   delay = 0,
   duration = 0.7,
-  distance = 26,
+  distance: _distance = 26,
   as = "div",
   className,
   ...rest
 }: RevealProps) {
   const reduced = useReducedMotion();
-  const { ref, shown } = useReveal<HTMLDivElement>(!reduced);
+  const { ref } = useReveal<HTMLDivElement>(!reduced);
 
   if (reduced) {
     const Tag = as as ElementType;
-    return <Tag className={className}>{children}</Tag>;
+    return <Tag className={className} {...rest}>{children}</Tag>;
   }
 
   const MotionTag = resolveMotionTag(as as string);
@@ -68,8 +51,8 @@ export function Reveal({
     <MotionTag
       ref={ref}
       className={className}
-      initial={{ opacity: 0, ...offset(direction, distance) }}
-      animate={shown ? { opacity: 1, x: 0, y: 0, scale: 1 } : undefined}
+      initial={false}
+      animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
       transition={revealTransition(delay, duration)}
       {...rest}
     >
@@ -147,7 +130,7 @@ export function RevealGroup({
   from?: RevealFrom;
 }) {
   const reduced = useReducedMotion();
-  const { ref, shown } = useReveal<HTMLDivElement>(!reduced);
+  const { ref } = useReveal<HTMLDivElement>(!reduced);
 
   if (reduced) {
     const Tag = as as ElementType;
@@ -163,8 +146,8 @@ export function RevealGroup({
         className={className}
         variants={containerVariants}
         custom={stagger}
-        initial="hidden"
-        animate={shown ? "visible" : "hidden"}
+        initial={false}
+        animate="visible"
       >
         {children}
       </MotionTag>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { featuredPost } from "@/data/insights";
+import { featuredPost, posts, categories } from "@/data/insights";
 import { buildMetadata, breadcrumbSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PageHero } from "@/components/sections/PageHero";
@@ -59,7 +59,7 @@ export default function InsightsPage() {
                   {featuredPost.excerpt}
                 </p>
 
-                <span className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9375rem] text-ink-400">
+                <span className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.9375rem] text-ink-500">
                   <span>{featuredPost.author}</span>
                   <span aria-hidden="true">·</span>
                   <time dateTime={featuredPost.date}>{formatDate(featuredPost.date)}</time>
@@ -103,7 +103,7 @@ export default function InsightsPage() {
       {/* Browser */}
       <Section compact className="pt-0">
         <div className="container-x">
-          <InsightsBrowser />
+          <InsightsBrowser categories={categories} posts={posts.map(({ slug, title, excerpt, category, date, author, readingTime }) => ({ slug, title, excerpt, category, date, author, readingTime }))} />
         </div>
       </Section>
 

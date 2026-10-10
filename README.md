@@ -2,7 +2,7 @@
 
 Premium marketing site for Aarsoft Technologies, built with Next.js App Router,
 TypeScript and Tailwind CSS v4. Server-rendered and statically prerendered for
-SEO, with smooth momentum scrolling and scroll-triggered reveals throughout.
+SEO, with native scrolling, readable server content and desktop motion enhancements.
 
 ## Running it
 
@@ -19,6 +19,10 @@ Then open http://localhost:3000.
 | `npm run build` | Production build (prerenders every route) |
 | `npm run start` | Serve the production build |
 | `npm run typecheck` | TypeScript check, no emit |
+| `npm run lint` | Noninteractive TypeScript/React hook lint checks |
+| `npm test` | Browser regression suite after installing Chromium |
+| `npm run test:unit` | Phone validation tests (Node 24) |
+| `npm run test:http` | Route/security/OG checks against a running production server |
 
 Do not run `npm run build` while `npm run dev` is running — the build replaces
 `.next` underneath the dev server and its chunks start 404ing. Stop the dev
@@ -28,11 +32,11 @@ server first, or build, then restart dev.
 
 1. Push this repository to GitHub.
 2. In Vercel, choose **Add New → Project**, import the repository and keep the detected Next.js defaults.
-3. Deploy. No environment variables are required.
+3. Configure the approved production URL and indexing policy using `.env.example`, then deploy. Verify all business contact details before launch.
 
 Every push to the default branch redeploys production; other branches get preview URLs.
 
-Canonical links, the sitemap and share previews use the project's production domain, so they point at the `.vercel.app` address at first. Once a custom domain such as `www.aarsoft.com` is added under **Settings → Domains** and set as primary, the next deploy picks it up with no code change.
+Set `NEXT_PUBLIC_SITE_URL` to the approved HTTPS domain. Vercel production can use its supplied production URL; previews remain noindex. Outside Vercel, set `SITE_INDEXABLE=true` only with a public HTTPS URL. HSTS is opt-in using `ENABLE_HSTS=true` after host verification.
 
 ## Where the content lives
 
@@ -41,7 +45,7 @@ component changes.
 
 | File | Contents |
 | --- | --- |
-| `data/site.ts` | Company name, positioning, founding year, headquarters, countries served, contact details, navigation |
+| `lib/site-config.ts` / `data/site.ts` | Company configuration / footer navigation |
 | `data/services.ts` | The eight services and every field of their individual pages |
 | `data/solutions.ts` | Solution cards |
 | `data/company.ts` | Industries, process steps, differentiators, values, statistics, technology stack, testimonials |
@@ -51,7 +55,7 @@ component changes.
 
 ### Placeholders still to replace
 
-- **Contact details** in `data/site.ts` — email, phone and location are placeholders.
+- **Contact details** in `lib/site-config.ts` — email, phone and location are placeholders.
 - **Testimonials** in `data/company.ts` — sample quotes with placeholder names.
 - **Insights articles** in `data/insights.ts` — written as sample editorial content.
 - **Open roles** in `data/careers.ts` — illustrative roles; set `openRoles` to `[]` when there are no vacancies.
@@ -59,8 +63,8 @@ component changes.
 
 ## Design system
 
-Brand tokens live at the top of `app/globals.css`. Only the five approved
-colours are used anywhere in the site:
+Brand tokens live at the top of `app/globals.css`. The five base colors are
+listed below; derived neutral tints and official third-party logo colors are permitted:
 
 | Token | Value |
 | --- | --- |
@@ -103,15 +107,15 @@ One rule, applied by what the element can carry:
 | Element | Class | Hover |
 | --- | --- | --- |
 | Buttons and pills | `.btn-gradient` | Gradient fills the background |
-| Cards and bordered boxes | `.card-box`, `.gradient-border` | Gradient 1px ring |
-| Text-only links | `.link-gradient` | Gradient fills the text |
+| Light cards and bordered boxes | `.card-box`, `.gradient-border` | Subtle lavender wash and accent border |
+| Text-only links | `.link-gradient` | Readable text with lavender underline |
 
 All three are plain CSS in `globals.css` rather than Tailwind `before:`
 variants, because those variants cannot target a hand-authored utility class.
 
-`.card-box` is the single card surface used across the site. Every card uses
-it, so they all lift, take a lavender wash rising from the bottom edge, and
-pick up the same gradient ring on hover.
+`.card-box` defines the shared light card surface: a small lift, a subtle
+lavender wash and an accent border. Dark `.svc-card` and technology-card variants
+are intentional: their gradient hover changes all text to readable dark colors.
 
 The wash lives on the card background-image layer rather than a pseudo-element,
 which lets it paint above the card colour but below the content without any
@@ -125,7 +129,7 @@ the Deep Black ground, the animated node network, then an optional video, then
 a scrim that protects the headline contrast.
 
 To use video, put the file in `public/` and point `heroVideo` in
-`data/site.ts` at it, for example `"/hero-background.mp4"`. It is empty by
+`lib/site-config.ts` at it, for example `"/hero-background.mp4"`. It is empty by
 default, which keeps the element unmounted so there is no failed request.
 
 With no video the animated layer carries the section on its own, so the hero
@@ -182,3 +186,20 @@ Semantic landmarks and headings, a skip link, visible focus rings, keyboard
 operable navigation and accordions, labelled form fields with an error summary
 that takes focus, and `aria-hidden` on every decorative graphic. Verified: one
 `h1` per page, no skipped heading levels, and no unnamed controls.
+
+## Current interaction and publishing behavior
+
+- Contact prepares an email draft; visitors must send it from their own email app. Online enquiry delivery is deliberately deferred and no success message claims receipt.
+- Work and testimonials are visibly labelled demonstrations/samples. No sample vacancy is advertised as an actual opening.
+- Unconfigured/generic social profiles are hidden. Current contact defaults require business verification.
+- No optional tracker is installed, so no misleading cookie consent banner is displayed. Add consent gating before introducing optional tracking.
+- Hover links retain readable text and use lavender underlines. Cards retain white/subtle lavender surfaces and gradient accents; light-surface text uses readable dark tints. Official technology-logo colors are permitted exceptions.
+- Work is a manual horizontal scroller; the technology list wraps. Motion is supplementary, and primary headings/figures stay readable without animation.
+- Navigation and service-choice projections are generated from authoritative data by scripts/generate-content.mjs before dev/build. Do not edit generated files.
+- CSP currently permits inline scripts/styles for static Next hydration; it restricts sources, framing, objects and browser permissions. A stricter nonce/hash policy and production HTTPS/HSTS require deployment verification.
+
+See WEBSITE_AUDIT_2026-10-08.md for baseline findings and remediation status, and PENDING_FUNCTIONALITY.md for deliberately deferred work.
+
+To build while development remains running, use NEXT_DIST_DIR=.next-audit for both build and production start. Never run simultaneous builds against the same output directory. Browser checks use TEST_BASE_URL when testing a separately running server.
+
+Font for OG images: Poppins SemiBold from the official Google Fonts repository, bundled with its OFL license in public/fonts.

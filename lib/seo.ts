@@ -69,6 +69,13 @@ export function organizationSchema() {
     description: site.description,
     logo: `${site.url}/aarsoft-mark.png`,
     email: site.contact.email,
+    telephone: site.contact.phoneHref,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "2001–2002, IT Park",
+      addressLocality: "Surat",
+      addressCountry: "IN",
+    },
     sameAs: site.social.map((s) => s.href),
   };
 }

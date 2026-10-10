@@ -1,22 +1,14 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { TextReveal } from "@/components/ui/TextReveal";
 import { Counter } from "@/components/ui/Counter";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { HeroBackground } from "@/components/visuals/HeroBackground";
 import { stats } from "@/data/company";
-import { useMotionTier } from "@/hooks/useMotionTier";
 import { useIntroDone } from "@/lib/intro";
-import { EASE_OUT, SPRING_SCROLL } from "@/lib/motion";
+import { EASE_OUT } from "@/lib/motion";
 
 /*
  * The hero shows the first three of the shared figures, with labels worded
@@ -45,8 +37,6 @@ const SEQUENCE = { badge: 0.05, headline: 0.15, copy: 0.55, ctas: 0.68, stats: 0
  */
 export function Hero() {
   const reduced = useReducedMotion();
-  const tier = useMotionTier();
-  const sectionRef = useRef<HTMLElement>(null);
   /* The sequence waits for the intro loader to open, so it plays in view. */
   const play = useIntroDone();
 
@@ -54,7 +44,7 @@ export function Hero() {
     reduced
       ? {}
       : {
-          initial: { opacity: 0, y: 18 },
+          initial: false as const,
           animate: play ? { opacity: 1, y: 0 } : undefined,
           transition: { duration: 0.8, delay, ease: EASE_OUT },
         };
@@ -63,18 +53,9 @@ export function Hero() {
    * Depth on scroll-out: the copy drifts up slowly and dims while the
    * artwork behind it lags (see HeroBackground). Desktop only.
    */
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const copyY = useSpring(useTransform(scrollYProgress, [0, 1], [0, -60]), SPRING_SCROLL);
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.35]);
-
-  const full = tier === "full";
 
   return (
     <section
-      ref={sectionRef}
       className="dark-section relative flex min-h-[100svh] flex-col justify-center overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-20 md:pt-[calc(var(--nav-h)+4rem)]"
     >
       <HeroBackground />
@@ -82,7 +63,6 @@ export function Hero() {
       <div className="container-x relative">
         <motion.div
           className="mx-auto flex max-w-6xl flex-col items-center text-center"
-          style={full ? { y: copyY, opacity: copyOpacity } : undefined}
         >
           <motion.div {...fadeUp(SEQUENCE.badge)}>
             <span className="inline-flex items-center gap-3 rounded-full border border-[rgba(193,184,255,0.28)] bg-[rgba(13,12,21,0.5)] px-5 py-2.5 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-ink-200 backdrop-blur sm:text-[0.875rem] sm:tracking-[0.18em]">

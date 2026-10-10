@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { AlertCircle, Check, Loader2 } from "lucide-react";
-import { services } from "@/data/services";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { serviceNames } from "@/data/service-options";
+import { site } from "@/lib/site-config";
+import { isValidPhone } from "@/lib/contact-validation";
 import { ArrowIcon, Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
@@ -28,8 +30,6 @@ const budgets = [
 
 /* Rejects addresses without a dot-separated domain, which catches most typos. */
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-/* Digits, spaces and the usual separators; length checked separately. */
-const phonePattern = /^[+()\-.\s\d]{7,20}$/;
 
 function validate(values: Record<Field, string>): Errors {
   const errors: Errors = {};
@@ -46,7 +46,7 @@ function validate(values: Record<Field, string>): Errors {
     errors.email = "Please enter a valid email address, for example name@company.com.";
   }
 
-  if (values.phone.trim() && !phonePattern.test(values.phone.trim())) {
+  if (!isValidPhone(values.phone)) {
     errors.phone = "Please enter a valid phone number, or leave this blank.";
   }
 
@@ -65,11 +65,11 @@ function validate(values: Record<Field, string>): Errors {
 
 export function ContactForm() {
   const [errors, setErrors] = useState<Errors>({});
-  const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "draft">("idle");
   const formRef = useRef<HTMLFormElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -94,14 +94,23 @@ export function ContactForm() {
 
     setStatus("submitting");
 
-    /*
-     * No backend is wired up yet. Connect this to your inbox, CRM or an API
-     * route here — the validated `values` object is ready to send.
-     */
-    await new Promise((resolve) => setTimeout(resolve, 900));
-
-    setStatus("success");
-    formRef.current?.reset();
+    const subject = encodeURIComponent(`Aarsoft Website Enquiry | ${values.service}`);
+    const body = encodeURIComponent([
+      "Hello Aarsoft Team,",
+      "I would like to discuss the following project.",
+      [
+        `Name: ${values.name.trim()}`,
+        `Email: ${values.email.trim()}`,
+        `Company: ${values.company.trim() || "Not provided"}`,
+        `Phone: ${values.phone.trim() || "Not provided"}`,
+        `Service: ${values.service}`,
+        `Budget: ${values.budget || "Not specified"}`,
+      ].join("\r\n"),
+      `Project Details:\r\n${values.details.trim()}`,
+      `Regards,\r\n${values.name.trim()}`,
+    ].join("\r\n\r\n"));
+    window.location.assign('mailto:' + site.contact.email + '?subject=' + subject + '&body=' + body);
+    setStatus("draft");
   };
 
   const clearError = (field: Field) =>
@@ -112,44 +121,19 @@ export function ContactForm() {
       return next;
     });
 
-  if (status === "success") {
-    return (
-      <div
-        role="status"
-        className="hairline flex flex-col items-start rounded-[var(--radius-lg)] bg-white p-9 md:p-12"
-      >
-        <span
-          className="flex h-12 w-12 items-center justify-center rounded-full"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          <Check className="h-5 w-5 text-ink-900" aria-hidden="true" />
-        </span>
-        <h2 className="fluid-h3 mt-7 text-ink-900">Thank you — your enquiry is in.</h2>
-        <p className="mt-3 max-w-[48ch] text-[1.125rem] leading-relaxed text-ink-500">
-          We read every project enquiry properly rather than sending an automated
-          reply. Expect a response within one business day.
-        </p>
-        <Button
-          type="button"
-          variant="secondary"
-          className="mt-8"
-          onClick={() => setStatus("idle")}
-        >
-          Send another enquiry
-        </Button>
-      </div>
-    );
-  }
-
   const errorList = Object.entries(errors) as [Field, string][];
 
   return (
     <form
       ref={formRef}
       onSubmit={handleSubmit}
+      action={`mailto:${site.contact.email}`}
+      method="post"
+      encType="text/plain"
       noValidate
-      className="hairline rounded-[var(--radius-lg)] bg-white p-7 md:p-10"
+      className="hairline min-w-0 rounded-[var(--radius-lg)] bg-white p-5 sm:p-7 md:p-10"
     >
+      {status === "draft" && <p role="status" className="mb-6 rounded-md bg-lavender-soft p-4 text-ink-900">Your email draft is ready. Send it from your email app to complete your enquiry. Opening a draft does not submit it. If the app did not open, <a className="underline" href={`mailto:${site.contact.email}`}>email us directly</a>.</p>}
       {errorList.length > 0 && (
         <div
           ref={summaryRef}
@@ -177,7 +161,8 @@ export function ContactForm() {
         </div>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2">
+      <p className="mb-6 text-[1rem] text-ink-700">This form prepares an email draft. Please send it from your email app; online submission is not yet available.</p>
+      <div className="grid min-w-0 gap-6 sm:grid-cols-2">
         <TextField
           name="name"
           label="Name"
@@ -221,7 +206,7 @@ export function ContactForm() {
           required
           error={errors.service}
           onChange={() => clearError("service")}
-          options={services.map((s) => s.title)}
+          options={serviceNames}
           placeholder="Select a service"
         />
         <SelectField
@@ -245,10 +230,9 @@ export function ContactForm() {
         </div>
       </div>
 
-      <div className="mt-7 flex flex-col gap-5 border-t border-ink-100 pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <p className="max-w-[40ch] text-[0.9375rem] leading-relaxed text-ink-400">
-          We use your details only to respond to this enquiry. Nothing is shared
-          with third parties.
+      <div className="mt-7 flex min-w-0 flex-col items-start gap-5 border-t border-ink-100 pt-8">
+        <p className="max-w-[40ch] text-[0.9375rem] leading-relaxed text-ink-500">
+          We use your details only to respond to this enquiry. Your email provider processes messages you choose to send.
         </p>
         <Button
           type="submit"
@@ -263,7 +247,7 @@ export function ContactForm() {
             </>
           ) : (
             <>
-              Send Project Inquiry
+              Prepare Email Enquiry
               <ArrowIcon />
             </>
           )}
@@ -281,7 +265,7 @@ const fieldClasses = (hasError: boolean) =>
   cn(
     "w-full rounded-[var(--radius-sm)] border bg-white px-4 py-3 text-[1.125rem] text-ink-900",
     /* Box-shadow is included so the focus ring eases in with the border. */
-    "placeholder:text-ink-300 transition-[border-color,box-shadow] duration-200",
+    "placeholder:text-ink-500 transition-[border-color,box-shadow] duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white",
     hasError
       ? "border-ink-900 focus:ring-ink-900"
@@ -306,12 +290,12 @@ function Label({
     >
       {children}
       {required && (
-        <span className="text-ink-400" aria-hidden="true">
+        <span className="text-ink-500" aria-hidden="true">
           *
         </span>
       )}
       {optional && (
-        <span className="text-[0.8125rem] font-normal text-ink-400">
+        <span className="text-[0.8125rem] font-normal text-ink-500">
           optional
         </span>
       )}
@@ -364,6 +348,7 @@ function TextField({
     "aria-invalid": error ? (true as const) : undefined,
     "aria-describedby": error ? errorId : undefined,
     required,
+    maxLength: name === "details" ? 2000 : name === "email" ? 254 : name === "phone" ? 30 : 150,
     className: fieldClasses(Boolean(error)),
   };
 
@@ -433,7 +418,7 @@ function SelectField({
           viewBox="0 0 16 16"
           fill="none"
           aria-hidden="true"
-          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
+          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-500"
         >
           <path
             d="m4 6 4 4 4-4"

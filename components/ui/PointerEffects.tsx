@@ -22,8 +22,8 @@ const TEXT_ENTRY = "input, textarea, [contenteditable='true']";
  * Desktop with a precise pointer only. Touch devices and reduced-motion
  * visitors never mount the listener.
  */
-export function PointerEffects() {
-  const tier = useMotionTier();
+function FullPointerEffects() {
+  const tier = "full";
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
@@ -90,3 +90,5 @@ export function PointerEffects() {
     />
   );
 }
+
+export function PointerEffects() { return useMotionTier() === "full" ? <FullPointerEffects /> : null; }

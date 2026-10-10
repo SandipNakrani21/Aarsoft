@@ -1,5 +1,6 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { site } from "@/data/site";
+import { WhatsAppIcon } from "@/components/ui/BrandIcons";
+import { site } from "@/lib/site-config";
 import { buildMetadata, breadcrumbSchema, faqSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PageHero } from "@/components/sections/PageHero";
@@ -25,7 +26,7 @@ const faqs = [
   {
     question: "How quickly will I hear back?",
     answer:
-      "Within one business day for project enquiries. If your timeline is urgent, say so in the project details and we will prioritise it.",
+      "Please include your timeline in the enquiry. We will confirm availability and next steps by email.",
   },
   {
     question: "Do I need a detailed specification first?",
@@ -57,7 +58,14 @@ const channels = [
     label: "Phone",
     value: site.contact.phone,
     href: `tel:${site.contact.phoneHref}`,
-    note: "Mon to Fri, business hours",
+    note: site.contact.workingHours,
+  },
+  {
+    icon: WhatsAppIcon,
+    label: "WhatsApp",
+    value: site.contact.phone,
+    href: site.contact.whatsappUrl,
+    note: "Chat with us about your project",
   },
   {
     icon: MapPin,
@@ -67,9 +75,9 @@ const channels = [
   },
   {
     icon: Clock,
-    label: "Response time",
-    value: site.contact.responseTime,
-    note: "Monday to Friday",
+    label: "Working hours",
+    value: site.contact.workingHours,
+    note: "India Standard Time",
   },
 ];
 
@@ -91,7 +99,7 @@ export default function ContactPage() {
         <div className="container-x">
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-8">
             {/* Form */}
-            <div className="lg:col-span-7">
+            <div className="min-w-0 lg:col-span-7">
               <ContactForm />
             </div>
 
@@ -114,13 +122,13 @@ export default function ContactPage() {
                           />
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                          <span className="block text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                             {channel.label}
                           </span>
                           <span className="mt-1.5 block break-words text-[1.125rem] text-ink-900">
                             {channel.value}
                           </span>
-                          <span className="mt-1 block text-[0.9375rem] text-ink-400">
+                          <span className="mt-1 block text-[0.9375rem] text-ink-500">
                             {channel.note}
                           </span>
                         </span>

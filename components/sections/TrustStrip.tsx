@@ -16,15 +16,15 @@ export function TrustStrip() {
         </p>
       </Reveal>
 
-      <div className="mask-fade-x relative mt-8 overflow-hidden">
-        <ul className="animate-marquee flex w-max items-center gap-x-12 md:gap-x-16">
-          {[...trustLabels, ...trustLabels].map((item, i) => {
+      <div className="container-x relative mt-8">
+        <ul className="flex flex-wrap justify-center items-center gap-x-8 gap-y-6 md:gap-x-12">
+          {trustLabels.map((item, i) => {
             const Glyph = item.icon;
             return (
               <li
                 key={`${item.name}-${i}`}
-                aria-hidden={i >= trustLabels.length}
-                className="group flex items-center gap-3 font-display text-xl font-medium tracking-[-0.02em] text-ink-400 transition-colors duration-300 hover:text-ink-900 md:text-2xl"
+                aria-hidden={false}
+                className="group flex items-center gap-3 font-display text-xl font-medium tracking-[-0.02em] text-ink-500 transition-colors duration-300 hover:text-ink-900 md:text-2xl"
               >
                 {item.logo ? (
                   <Image
@@ -33,7 +33,7 @@ export function TrustStrip() {
                     width={32}
                     height={32}
                     /* The strip moves, so off-screen logos must be ready before they slide in. */
-                    loading="eager"
+                    loading="lazy"
                     className="h-7 w-7 object-contain md:h-8 md:w-8"
                   />
                 ) : Glyph ? (

@@ -1,5 +1,5 @@
 import { benefits, culturePoints, openRoles } from "@/data/careers";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 import { buildMetadata, breadcrumbSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PageHero } from "@/components/sections/PageHero";
@@ -74,7 +74,7 @@ export default function CareersPage() {
                   className="border-t border-ink-200 py-8 first:border-t-0 first:pt-0 last:pb-0"
                 >
                   <div className="flex gap-6 md:gap-8">
-                    <span className="mt-1.5 text-[0.8125rem] tracking-[0.14em] text-ink-400">
+                    <span className="mt-1.5 text-[0.8125rem] tracking-[0.14em] text-ink-500">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
@@ -164,14 +164,13 @@ export default function CareersPage() {
           <SectionHeading
             eyebrow="Open positions"
             lines={["Roles We Are", "Hiring For."]}
-            description="Every role here is a real opening on a real team. If none of them fit, send us your work anyway."
+            description="Confirmed vacancies will be listed here. You can also email us a speculative application."
             className="max-w-3xl"
           />
 
           <Reveal delay={0.05}>
             <p className="mt-6 max-w-[62ch] text-[1.125rem] text-ink-500">
-              These are sample roles showing the disciplines we hire into. Confirm
-              current availability by emailing{" "}
+              For current availability and speculative applications, email{" "}
               <a
                 href={`mailto:${site.contact.careersEmail}`}
                 className="font-medium text-ink-900 underline decoration-lavender decoration-2 underline-offset-4 transition-colors hover:decoration-gold"
@@ -225,7 +224,7 @@ export default function CareersPage() {
                     </p>
 
                     <div className="md:col-span-4">
-                      <h4 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                      <h4 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                         What you will do
                       </h4>
                       <ul className="mt-4 space-y-2.5">
@@ -245,7 +244,7 @@ export default function CareersPage() {
                     </div>
 
                     <div className="md:col-span-4">
-                      <h4 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                      <h4 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                         What we look for
                       </h4>
                       <ul className="mt-4 space-y-2.5">

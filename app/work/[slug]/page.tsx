@@ -70,9 +70,8 @@ export default async function CaseStudyPage({ params }: Params) {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <p className="mt-6 text-[1.125rem] text-ink-400">
-              Client name withheld. The outcomes below describe what the platform
-              does rather than business results claimed on a client's behalf.
+            <p className="mt-6 text-[1.125rem] text-ink-500">
+              Demonstration project, not a client engagement. The outcomes describe platform capabilities, not measured client results.
             </p>
           </Reveal>
 
@@ -80,13 +79,13 @@ export default async function CaseStudyPage({ params }: Params) {
           <Reveal delay={0.15}>
             <dl className="mt-9 grid gap-8 border-y border-ink-200 py-8 sm:grid-cols-3">
               <div>
-                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Category
                 </dt>
                 <dd className="mt-2.5 text-[1.125rem] text-ink-900">{project.category}</dd>
               </div>
               <div>
-                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Technology
                 </dt>
                 <dd className="mt-2.5">
@@ -103,7 +102,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 </dd>
               </div>
               <div>
-                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <dt className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Capability
                 </dt>
                 <dd className="mt-2.5">
@@ -146,7 +145,7 @@ export default async function CaseStudyPage({ params }: Params) {
 
             <div className="lg:col-span-7">
               <Reveal>
-                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   The approach
                 </span>
               </Reveal>
@@ -158,7 +157,7 @@ export default async function CaseStudyPage({ params }: Params) {
                     key={step}
                     className="flex gap-6 border-t border-ink-200 py-7 first:border-t-0 first:pt-0 last:pb-0 md:gap-8"
                   >
-                    <span className="mt-1 text-[0.8125rem] tracking-[0.14em] text-ink-400">
+                    <span className="mt-1 text-[0.8125rem] tracking-[0.14em] text-ink-500">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <p className="max-w-[56ch] text-[1.125rem] leading-relaxed text-ink-700">
@@ -212,7 +211,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 <ProjectVisual variant={next.visual} accent={next.accent} />
               </div>
               <div className="md:col-span-7">
-                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Next project — {next.category}
                 </span>
                 <span className="fluid-h3 mt-3 block text-ink-900">{next.title}</span>

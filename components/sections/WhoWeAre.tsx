@@ -6,7 +6,7 @@ import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 import { Counter } from "@/components/ui/Counter";
 import { Parallax, ScrollScale } from "@/components/ui/Parallax";
 import { NodeNetwork } from "@/components/visuals/NodeNetwork";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 import { stats } from "@/data/company";
 
 /**

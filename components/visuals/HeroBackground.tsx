@@ -10,7 +10,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 import { useMotionTier } from "@/hooks/useMotionTier";
 import { SPRING_SOFT } from "@/lib/motion";
 
@@ -91,12 +91,11 @@ const particles = [
  * Every loop is CSS on transform or opacity. Phones drop the pulses, the
  * sweep and the pointer depth; reduced motion stops all of it.
  */
-export function HeroBackground({ src = site.heroVideo }: { src?: string }) {
+function AnimatedHeroBackground({ src = site.heroVideo }: { src?: string }) {
   const reduced = useReducedMotion();
-  const tier = useMotionTier();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
-  const depth = tier === "full";
+  const depth = true;
 
   /*
    * Scroll depth: the artwork drifts down more slowly than the page scrolls.
@@ -289,4 +288,13 @@ export function HeroBackground({ src = site.heroVideo }: { src?: string }) {
       />
     </div>
   );
+}
+
+export function HeroBackground({ src = site.heroVideo }: { src?: string }) {
+  const tier = useMotionTier();
+  if (tier === "full") return <AnimatedHeroBackground src={src} />;
+  return <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden bg-ink-900">
+    <Image src="/hero-bg.webp" alt="" fill priority sizes="100vw" className="object-cover" />
+    <div className="absolute inset-0 bg-ink-900/50" />
+  </div>;
 }

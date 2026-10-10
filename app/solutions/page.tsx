@@ -43,7 +43,7 @@ export default function SolutionsPage() {
         </div>
       </PageHero>
 
-      <SolutionsSection />
+      <SolutionsSection directory />
       <IndustriesSection />
       <ProcessSection />
 

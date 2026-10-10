@@ -26,7 +26,10 @@ export type Role = {
   requirements: string[];
 };
 
-export const openRoles: Role[] = [
+export const openRoles: Role[] = [];
+
+/** Unpublished examples retained for future vacancy preparation. */
+export const sampleRoles: Role[] = [
   {
     slug: "dotnet-developer",
     title: ".NET Developer",

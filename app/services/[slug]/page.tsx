@@ -89,7 +89,7 @@ export default async function ServicePage({ params }: Params) {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-8">
             <Reveal>
               <article className="hairline h-full card-shape bg-white p-8 md:p-10">
-                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   {service.problem.title}
                 </span>
                 <p className="mt-5 text-2xl leading-relaxed text-ink-900 md:text-3xl">
@@ -296,7 +296,7 @@ export default async function ServicePage({ params }: Params) {
               className="group flex flex-wrap items-center justify-between gap-6 card-shape border border-ink-200 p-8 transition-all duration-500 hover:-translate-y-1 hover:border-ink-900 hover:shadow-lg md:p-10"
             >
               <span>
-                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Next service
                 </span>
                 <span className="fluid-h3 mt-2.5 block text-ink-900">{next.title}</span>

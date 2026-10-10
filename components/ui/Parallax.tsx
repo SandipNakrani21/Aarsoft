@@ -13,7 +13,7 @@ import { SPRING_SCROLL } from "@/lib/motion";
  * Desktop only: on touch devices and under reduced motion the wrapper stays
  * but nothing is bound to scroll, so phones do no per-frame work for it.
  */
-export function Parallax({
+function FullParallax({
   children,
   /** Pixels of travel across the full scroll range. Negative reverses it. */
   offset = 60,
@@ -28,7 +28,6 @@ export function Parallax({
   innerClassName?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const tier = useMotionTier();
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -42,7 +41,7 @@ export function Parallax({
     <div ref={ref} className={className}>
       <motion.div
         className={innerClassName}
-        style={tier === "full" ? { [axis]: value } : undefined}
+        style={{ [axis]: value }}
       >
         {children}
       </motion.div>
@@ -59,7 +58,7 @@ export function Parallax({
  * while a visitor stops scrolling looks broken. On touch devices and under
  * reduced motion it renders at full size from the start.
  */
-export function ScrollScale({
+function FullScrollScale({
   children,
   from = 0.96,
   className,
@@ -69,7 +68,6 @@ export function ScrollScale({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const tier = useMotionTier();
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -81,9 +79,18 @@ export function ScrollScale({
     <motion.div
       ref={ref}
       className={className}
-      style={tier === "full" ? { scale, transformOrigin: "50% 100%" } : undefined}
+      style={{ scale, transformOrigin: "50% 100%" }}
     >
       {children}
     </motion.div>
   );
+}
+
+export function Parallax(props: { children?: ReactNode; offset?: number; axis?: "x" | "y"; className?: string; innerClassName?: string }) {
+  const tier = useMotionTier();
+  return tier === "full" ? <FullParallax {...props} /> : <div className={props.className}><div className={props.innerClassName}>{props.children}</div></div>;
+}
+export function ScrollScale(props: { children: ReactNode; from?: number; className?: string }) {
+  const tier = useMotionTier();
+  return tier === "full" ? <FullScrollScale {...props} /> : <div className={props.className}>{props.children}</div>;
 }

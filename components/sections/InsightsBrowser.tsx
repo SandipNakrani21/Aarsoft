@@ -1,17 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Search, X } from "lucide-react";
-import { categories, posts, type Category } from "@/data/insights";
+import type { ArticleSummary, Category } from "@/data/article-types";
 import { formatDate, cn } from "@/lib/utils";
 
 /** Category filtering and text search over the article list. */
-export function InsightsBrowser() {
+export function InsightsBrowser({ posts, categories }: { posts: ArticleSummary[]; categories: readonly Category[] }) {
   const [active, setActive] = useState<Category | "All">("All");
   const [query, setQuery] = useState("");
   const reduced = useReducedMotion();
+  useEffect(() => {
+    const restore = () => {
+      const params = new URLSearchParams(window.location.search);
+      setQuery(params.get("q") ?? "");
+      const category = params.get("category");
+      setActive(categories.includes(category as Category) ? category as Category : "All");
+    };
+    restore();
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, [categories]);
+  const update = (nextQuery: string, nextCategory: Category | "All", push = false) => {
+    setQuery(nextQuery);
+    setActive(nextCategory);
+    const url = new URL(window.location.href);
+    if (nextQuery) url.searchParams.set("q", nextQuery); else url.searchParams.delete("q");
+    if (nextCategory !== "All") url.searchParams.set("category", nextCategory); else url.searchParams.delete("category");
+    window.history[push ? "pushState" : "replaceState"](null, "", url);
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -24,7 +43,7 @@ export function InsightsBrowser() {
         post.category.toLowerCase().includes(q);
       return matchesCategory && matchesQuery;
     });
-  }, [active, query]);
+  }, [active, query, posts]);
 
   return (
     <div>
@@ -40,7 +59,7 @@ export function InsightsBrowser() {
               <li key={category}>
                 <button
                   type="button"
-                  onClick={() => setActive(category)}
+                  onClick={() => update(query, category, true)}
                   aria-pressed={isActive}
                   className={cn(
                     /* A pill has a background, so it takes the gradient there rather than on the text. */
@@ -65,7 +84,7 @@ export function InsightsBrowser() {
 
         <div className="relative lg:w-72">
           <Search
-            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-500"
             aria-hidden="true"
           />
           <label htmlFor="insight-search" className="sr-only">
@@ -75,16 +94,16 @@ export function InsightsBrowser() {
             id="insight-search"
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => update(e.target.value, active)}
             placeholder="Search articles"
-            className="w-full rounded-[var(--radius-sm)] border border-ink-200 bg-white py-2.5 pl-10 pr-9 text-[1.125rem] text-ink-900 placeholder:text-ink-300 transition-colors duration-200 hover:border-ink-300 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-lavender"
+            className="w-full rounded-[var(--radius-sm)] border border-ink-200 bg-white py-2.5 pl-10 pr-9 text-[1.125rem] text-ink-900 placeholder:text-ink-500 transition-colors duration-200 hover:border-ink-300 focus:border-ink-900 focus:outline-none focus:ring-2 focus:ring-lavender"
           />
           {query && (
             <button
               type="button"
-              onClick={() => setQuery("")}
+              onClick={() => update("", active)}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-ink-400 transition-colors hover:text-ink-900 link-gradient"
+              className="absolute right-3 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-ink-500 transition-colors hover:text-ink-900 link-gradient"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -93,7 +112,7 @@ export function InsightsBrowser() {
       </div>
 
       {/* Result count, announced to assistive tech */}
-      <p role="status" className="mt-6 text-[0.875rem] text-ink-400">
+      <p role="status" className="mt-6 text-[0.875rem] text-ink-500">
         {filtered.length} {filtered.length === 1 ? "article" : "articles"}
         {active !== "All" && ` in ${active}`}
         {query && ` matching “${query}”`}
@@ -108,8 +127,7 @@ export function InsightsBrowser() {
           <button
             type="button"
             onClick={() => {
-              setActive("All");
-              setQuery("");
+              update("", "All", true);
             }}
             className="mt-6 btn-shape border border-ink-200 px-4 py-2.5 text-[1.125rem] font-medium text-ink-900 transition-colors hover:border-ink-900"
           >
@@ -123,7 +141,7 @@ export function InsightsBrowser() {
               <motion.li
                 key={post.slug}
                 layout={!reduced}
-                initial={reduced ? false : { opacity: 0, scale: 0.97 }}
+                initial={false}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -133,7 +151,7 @@ export function InsightsBrowser() {
                   href={`/insights/${post.slug}`}
                   className="card-box group flex h-full flex-col p-7"
                 >
-                  <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-400">
+                  <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-500">
                     {post.category}
                   </span>
 
@@ -145,7 +163,7 @@ export function InsightsBrowser() {
                     {post.excerpt}
                   </p>
 
-                  <span className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-ink-100 pt-5 text-[0.875rem] text-ink-400">
+                  <span className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-ink-100 pt-5 text-[0.875rem] text-ink-500">
                     <span>{post.author}</span>
                     <span aria-hidden="true">·</span>
                     <time dateTime={post.date}>{formatDate(post.date)}</time>

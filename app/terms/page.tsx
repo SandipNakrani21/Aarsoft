@@ -1,4 +1,4 @@
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/sections/PageHero";
 import { Section } from "@/components/ui/Section";

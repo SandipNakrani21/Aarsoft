@@ -149,7 +149,7 @@ export default function ServicesPage() {
                   <p className="mt-4 flex-1 text-[1.125rem] leading-relaxed text-ink-500">
                     {model.body}
                   </p>
-                  <p className="mt-6 border-t border-ink-100 pt-5 text-[0.875rem] text-ink-400">
+                  <p className="mt-6 border-t border-ink-100 pt-5 text-[0.875rem] text-ink-500">
                     {model.fit}
                   </p>
                 </article>
@@ -167,7 +167,7 @@ export default function ServicesPage() {
       </Section>
 
       <ProcessSection />
-      <TechStack />
+      <TechStack directory />
 
       <CtaSection
         eyebrow="Next step"

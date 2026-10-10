@@ -93,7 +93,7 @@ export function PageHero({
             {breadcrumb && (
               <Reveal>
                 <nav aria-label="Breadcrumb">
-                  <ol className="flex flex-wrap items-center gap-2 text-[0.8125rem] uppercase tracking-[0.12em] text-ink-400">
+                  <ol className="flex flex-wrap items-center gap-2 text-[0.8125rem] uppercase tracking-[0.12em] text-ink-500">
                     <li>
                       <Link href="/" className="link-gradient transition-colors hover:text-white">
                         Home

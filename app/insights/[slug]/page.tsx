@@ -59,7 +59,7 @@ export default async function ArticlePage({ params }: Params) {
       >
         <div className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-[rgba(193,184,255,0.18)] pt-7 text-[0.9375rem] text-ink-300">
           <span className="font-medium text-white">{post.author}</span>
-          <span className="text-ink-400">{post.authorRole}</span>
+          <span className="text-ink-500">{post.authorRole}</span>
           <span aria-hidden="true" className="text-ink-500">
             ·
           </span>
@@ -93,7 +93,7 @@ export default async function ArticlePage({ params }: Params) {
 
             <Reveal>
               <div className="mt-11 border-t border-ink-200 pt-8">
-                <p className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <p className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Written by
                 </p>
                 <div className="mt-4 flex items-center gap-3.5">
@@ -118,7 +118,7 @@ export default async function ArticlePage({ params }: Params) {
       {/* Related */}
       <Section tone="surface" compact>
         <div className="container-x">
-          <h2 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+          <h2 className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
             Keep reading
           </h2>
 
@@ -129,7 +129,7 @@ export default async function ArticlePage({ params }: Params) {
                   href={`/insights/${item.slug}`}
                   className="card-box group flex flex-col p-7"
                 >
-                  <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-400">
+                  <span className="text-[0.8125rem] uppercase tracking-[0.14em] text-ink-500">
                     {item.category}
                   </span>
                   <h3 className="mt-4 flex-1 font-display text-xl leading-tight tracking-[-0.02em] text-ink-900">

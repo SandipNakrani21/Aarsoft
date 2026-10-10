@@ -1,11 +1,11 @@
 "use client";
+import { useMotionTier } from "@/hooks/useMotionTier";
 
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 /** Thin gradient bar showing read progress, pinned under the navigation. */
-export function ScrollProgress() {
+function FullScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const reduced = useReducedMotion();
 
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 140,
@@ -13,7 +13,6 @@ export function ScrollProgress() {
     restDelta: 0.001,
   });
 
-  if (reduced) return null;
 
   return (
     <motion.div
@@ -23,3 +22,5 @@ export function ScrollProgress() {
     />
   );
 }
+
+export function ScrollProgress() { return useMotionTier() === "full" ? <FullScrollProgress /> : null; }

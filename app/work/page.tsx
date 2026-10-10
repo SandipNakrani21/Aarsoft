@@ -10,7 +10,7 @@ import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 export const metadata = buildMetadata({
   title: "Work",
   description:
-    "Platforms delivered by Aarsoft across travel, manufacturing, healthcare, e-commerce, logistics and care services.",
+    "Demonstration platforms by Aarsoft across travel, manufacturing, healthcare, e-commerce, logistics and care services.",
   path: "/work",
   keywords: ["software case studies", "CRM platform", "workflow automation", "AI analytics"],
 });
@@ -23,7 +23,7 @@ export default function WorkPage() {
       <PageHero
         eyebrow="Work"
         lines={["Digital Products Built", "for Real-World Business."]}
-        description="A selection of the platforms we have delivered, spanning a range of industries and business needs. Each one walks through the challenge and the decisions behind it."
+        description="A selection of the demonstration platforms, spanning a range of industries and business needs. Each one walks through the challenge and the decisions behind it."
         breadcrumb={[{ name: "Work", href: "/work" }]}
       >
         <div className="mt-8">

@@ -1,5 +1,8 @@
 node_modules
 .next
+.next-audit
+test-results
+playwright-report
 out
 .env*.local
 .DS_Store

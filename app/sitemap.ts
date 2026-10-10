@@ -5,7 +5,6 @@ import { caseStudies } from "@/data/work";
 import { posts } from "@/data/insights";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
 
   const staticRoutes: { path: string; priority: number; freq: "weekly" | "monthly" | "yearly" }[] = [
     { path: "/", priority: 1, freq: "weekly" },
@@ -24,19 +23,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticRoutes.map((route) => ({
       url: `${site.url}${route.path === "/" ? "" : route.path}`,
-      lastModified: now,
       changeFrequency: route.freq,
       priority: route.priority,
     })),
     ...services.map((service) => ({
       url: `${site.url}/services/${service.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
     })),
     ...caseStudies.map((project) => ({
       url: `${site.url}/work/${project.slug}`,
-      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

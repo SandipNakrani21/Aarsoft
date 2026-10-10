@@ -37,7 +37,6 @@
    * gradient text on light grounds, where the full-strength lavender and
    * gold wash out against white and pale glass.
    */
-  --gradient-primary-deep: linear-gradient(135deg, #5443d6 0%, #a36a00 100%);
 
   /* Radii */
   --radius-sm: 8px;
@@ -312,11 +311,10 @@
    */
   .stat-tile:hover .stat-figure,
   .stat-tile:focus-within .stat-figure {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    text-decoration: underline;
+    text-decoration-color: var(--color-lavender);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
   }
 
   .bg-gradient-primary {
@@ -734,9 +732,7 @@
     inset: 0;
     z-index: -1;
     border-radius: inherit;
-    background:
-      radial-gradient(120% 70% at 100% 100%, rgba(255, 255, 255, 0.28), transparent 60%),
-      var(--gradient-primary);
+    background: linear-gradient(to top, rgba(193,184,255,0.12), transparent);
     opacity: 0;
     transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
@@ -748,7 +744,7 @@
   /* On the gradient the hairline border clears and grey body copy darkens a step. */
   .card-box:hover,
   .card-box:focus-within {
-    border-color: transparent;
+    border-color: var(--color-lavender);
   }
   .card-box .text-ink-500 {
     transition: color 0.45s ease;
@@ -875,11 +871,10 @@
     transition: color 0.3s ease;
   }
   .process-step:hover .process-title {
-    background: var(--gradient-primary-deep);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: var(--color-black);
+    text-decoration: underline;
+    text-decoration-color: var(--color-lavender);
+    text-underline-offset: 5px;
   }
   .process-stem {
     background: linear-gradient(to bottom, var(--color-lavender), var(--color-gold));
@@ -967,9 +962,7 @@
   /* Light-ground variant: the deeper gradient keeps the hovered word legible. */
   .link-gradient-deep:hover,
   .link-gradient-deep:focus-visible {
-    background: var(--gradient-primary-deep);
-    -webkit-background-clip: text;
-    background-clip: text;
+    color: var(--color-black);
   }
 
   /*
@@ -2000,4 +1993,13 @@ html[data-visited] .route-loader[data-phase="boot"] {
 [data-paused] *::before,
 [data-paused] *::after {
   animation-play-state: paused !important;
+}
+
+/* Accessible anchors and responsive intrinsic sizing. */
+[id] { scroll-margin-top: calc(var(--nav-h) + 1.5rem); }
+main:focus { outline: none; }
+.btn-cut > svg { flex-shrink: 0; }
+.dark-section .text-ink-500, footer .text-ink-500 { color: var(--color-ink-300); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
 }

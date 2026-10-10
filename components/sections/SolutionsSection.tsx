@@ -6,7 +6,7 @@ import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { CardHead } from "@/components/ui/CardHead";
 import { ArrowIcon, ButtonLink } from "@/components/ui/Button";
 
-export function SolutionsSection({ limit }: { limit?: number }) {
+export function SolutionsSection({ limit, directory = false }: { limit?: number; directory?: boolean }) {
   const list = limit ? solutions.slice(0, limit) : solutions;
 
   return (
@@ -14,13 +14,13 @@ export function SolutionsSection({ limit }: { limit?: number }) {
       <div className="container-x">
         <SplitHeading
           eyebrow="Solutions"
-          lines={["Platforms Built Around", "a Business Outcome."]}
+          lines={directory ? ["Choose the Platform", "That Fits Your Goal."] : ["Platforms Built Around", "a Business Outcome."]}
           description="Each of these starts with a problem that costs you time or revenue, not with a technology we wanted to use."
         >
-          <ButtonLink href="/solutions" variant="secondary">
+          {!directory && <ButtonLink href="/solutions" variant="secondary">
             View all solutions
             <ArrowIcon />
-          </ButtonLink>
+          </ButtonLink>}
         </SplitHeading>
 
         <RevealGroup
@@ -33,7 +33,7 @@ export function SolutionsSection({ limit }: { limit?: number }) {
             return (
               <RevealItem as="li" key={solution.title}>
                 <article
-                  id={slugify(solution.title)}
+                  id={`solution-${slugify(solution.title)}`}
                   className="card-box card-box-lift corner-card group flex scroll-mt-32 flex-col"
                 >
                   <CardHead

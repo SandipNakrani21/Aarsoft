@@ -162,7 +162,7 @@ export function TextReveal({
   fill = false,
   rule,
   soft = false,
-  play = true,
+  play: _play = true,
 }: SharedProps & {
   delay?: number;
   /** Add a blur-to-sharp resolve to the rise. Reserved for the hero. */
@@ -194,8 +194,8 @@ export function TextReveal({
       className={cn(HEADING_FIT, className)}
       variants={container}
       custom={delay}
-      initial="hidden"
-      animate={play ? "visible" : "hidden"}
+      initial={false}
+      animate="visible"
     >
       <Lines
         lines={lines}
@@ -220,7 +220,7 @@ export function TextRevealOnScroll({
 }: SharedProps) {
   const reduced = useReducedMotion();
   const showRule = rule ?? !fill;
-  const { ref, shown } = useReveal<HTMLHeadingElement>(!reduced);
+  const { ref } = useReveal<HTMLHeadingElement>(!reduced);
 
   if (reduced) {
     return (
@@ -243,8 +243,8 @@ export function TextRevealOnScroll({
       ref={ref}
       className={cn(HEADING_FIT, className)}
       variants={container}
-      initial="hidden"
-      animate={shown ? "visible" : "hidden"}
+      initial={false}
+      animate="visible"
     >
       <Lines
         lines={lines}

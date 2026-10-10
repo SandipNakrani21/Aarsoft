@@ -1,4 +1,5 @@
 import { values } from "@/data/company";
+import { site } from "@/lib/site-config";
 import { buildMetadata, breadcrumbSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { PageHero } from "@/components/sections/PageHero";
@@ -61,7 +62,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About Aarsoft"
         lines={["Revolutionizing", "Business Software."]}
-        description="Founded in 2014 and headquartered in Ahmedabad, Aarsoft partners with startups, businesses and agencies across 9 countries to build the software behind their operations."
+        description={`Founded in 2014 and based in ${site.headquarters}, Aarsoft partners with startups, businesses and agencies across 9 countries to build the software behind their operations.`}
         breadcrumb={[{ name: "About", href: "/about" }]}
       >
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -117,7 +118,7 @@ export default function AboutPage() {
                   day.
                 </RevealItem>
                 <RevealItem as="p">
-                  From Ahmedabad to international teams across Canada, the United
+                  From {site.headquarters} to international teams across Canada, the United
                   Kingdom and Germany, we bring the same standard of engineering to
                   every engagement.
                 </RevealItem>
@@ -133,7 +134,7 @@ export default function AboutPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <Reveal>
               <article className="hairline flex h-full flex-col justify-between card-shape bg-white p-9 md:p-12">
-                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-400">
+                <span className="text-[0.8125rem] uppercase tracking-[0.16em] text-ink-500">
                   Mission
                 </span>
                 <p className="mt-8 text-3xl leading-snug tracking-[-0.025em] text-ink-900 md:text-4xl">
@@ -251,7 +252,7 @@ export default function AboutPage() {
                       <p className="mt-3 max-w-[56ch] text-[1.125rem] leading-relaxed text-ink-300">
                         {item.body}
                       </p>
-                      <p className="mt-3.5 flex items-start gap-3 text-[1rem] leading-relaxed text-ink-400">
+                      <p className="mt-3.5 flex items-start gap-3 text-[1rem] leading-relaxed text-ink-500">
                         <span
                           aria-hidden="true"
                           className="mt-2.5 h-px w-6 shrink-0"

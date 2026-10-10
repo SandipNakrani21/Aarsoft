@@ -5,16 +5,12 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
-import { IntroLoader } from "@/components/layout/IntroLoader";
-import { RouteLoader } from "@/components/layout/RouteLoader";
-import { CookieConsent } from "@/components/layout/CookieConsent";
 import { AmbientPause } from "@/components/layout/AmbientPause";
-import { visitedScript } from "@/lib/visit";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { PointerEffects } from "@/components/ui/PointerEffects";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 
 /* Single family across the whole site, matching the Aarsoft brand site. */
 const poppins = Poppins({
@@ -61,8 +57,8 @@ export const metadata: Metadata = {
     description: site.description,
   },
   robots: {
-    index: true,
-    follow: true,
+    index: site.indexable,
+    follow: site.indexable,
     googleBot: {
       index: true,
       follow: true,
@@ -91,30 +87,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${poppins.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        {/* Flags returning visitors before first paint, so they never see the intro. */}
-        <script dangerouslySetInnerHTML={{ __html: visitedScript }} />
-      </head>
       <body>
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
 
-        {/*
-          Loaders: the intro plays once per browser; after that, refreshes and
-          page changes get the lighter route loader. Both live in the layout.
-        */}
-        <IntroLoader />
-        <RouteLoader />
         <SmoothScroll />
         <AmbientPause />
         <ScrollProgress />
         <PointerEffects />
         <Navbar />
+        <noscript><nav aria-label="Navigation without JavaScript" className="relative z-50 flex flex-wrap gap-4 bg-white px-6 py-4 text-ink-900">{["services", "solutions", "industries", "about", "work", "insights", "careers", "contact"].map(path => <a key={path} href={`/${path}`} className="capitalize underline">{path}</a>)}</nav></noscript>
 
-        <main id="main">{children}</main>
+        <main id="main" tabIndex={-1}>{children}</main>
 
         <Footer />
-        <CookieConsent />
       </body>
     </html>
   );

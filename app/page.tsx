@@ -13,7 +13,7 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { ScrollScene } from "@/components/ui/ScrollScene";
 import { buildMetadata } from "@/lib/seo";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 
 export const metadata = buildMetadata({
   title: `${site.name} — ${site.tagline}`,

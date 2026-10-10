@@ -4,7 +4,7 @@ import { TextRevealOnScroll } from "@/components/ui/TextReveal";
 import { Eyebrow } from "@/components/ui/Section";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { Parallax, ScrollScale } from "@/components/ui/Parallax";
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 
 export function CtaSection({
   eyebrow = "Get started",
@@ -89,7 +89,7 @@ export function CtaSection({
                   </ButtonLink>
                 </div>
 
-                <p className="text-base text-ink-400">
+                <p className="text-base text-ink-500">
                   or email{" "}
                   <a
                     href={`mailto:${site.contact.email}`}

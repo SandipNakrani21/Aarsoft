@@ -12,7 +12,7 @@ import { CardHead } from "@/components/ui/CardHead";
  * (`.svc-card`) with the outlined number riding the top-right corner, the
  * corner icon tab, a gradient title and the shared gradient hover.
  */
-export function IndustriesSection() {
+export function IndustriesSection({ directory = false }: { directory?: boolean }) {
   return (
     <Section id="industries" tone="dark" className="overflow-hidden">
       {/* Brand grid and a soft glow behind the cards */}
@@ -27,13 +27,13 @@ export function IndustriesSection() {
         <SplitHeading
           dark
           eyebrow="Industries"
-          lines={["Context Matters", "as Much as Code."]}
+          lines={directory ? ["Explore Your", "Industry."] : ["Context Matters", "as Much as Code."]}
           description="Every sector has its own vocabulary, constraints and regulatory weight. We learn yours before we design anything."
         >
-          <ButtonLink href="/industries" variant="onDarkGhost">
+          {!directory && <ButtonLink href="/industries" variant="onDarkGhost">
             View all industries
             <ArrowIcon />
-          </ButtonLink>
+          </ButtonLink>}
         </SplitHeading>
 
         <RevealGroup
@@ -48,7 +48,7 @@ export function IndustriesSection() {
               /* Top padding leaves room for the number to ride above the card. */
               <RevealItem as="li" key={industry.name} className="pt-10">
                 <div
-                  id={slugify(industry.name)}
+                  id={`industry-${slugify(industry.name)}`}
                   className="svc-card corner-card group scroll-mt-32"
                 >
                   <svg aria-hidden="true" viewBox="0 0 200 110" className="svc-number">

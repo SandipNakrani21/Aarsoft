@@ -115,7 +115,7 @@ export function ProcessSection() {
 
                 {/* Copy */}
                 <div className="min-w-0 lg:flex lg:min-h-[7.5rem] lg:flex-col lg:items-center lg:justify-center lg:px-1 lg:py-4 lg:text-center">
-                  <span className="text-[0.8125rem] font-medium tracking-[0.14em] text-ink-400 lg:hidden">
+                  <span className="text-[0.8125rem] font-medium tracking-[0.14em] text-ink-500 lg:hidden">
                     {step.number}
                   </span>
                   <h3 className="process-title font-display text-2xl tracking-[-0.025em] text-ink-900">

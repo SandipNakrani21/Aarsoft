@@ -15,7 +15,7 @@ type Size = "md" | "lg";
 const base =
   "btn-cut group/btn relative isolate inline-flex items-center justify-center gap-2.5 font-medium " +
   "btn-shape transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] " +
-  "whitespace-nowrap select-none disabled:opacity-50 disabled:pointer-events-none " +
+  "max-w-full min-w-0 whitespace-normal text-center leading-snug select-none disabled:opacity-50 disabled:pointer-events-none " +
   "hover:-translate-y-0.5 hover:text-ink-900 focus-visible:text-ink-900";
 
 const variants: Record<Variant, string> = {
@@ -32,8 +32,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  md: "h-[52px] px-10 text-[1.125rem]",
-  lg: "h-[60px] px-14 text-[1.25rem]",
+  md: "min-h-[52px] px-5 py-3 text-[1rem] sm:px-10 sm:text-[1.125rem]",
+  lg: "min-h-[60px] px-5 py-3 text-[1.0625rem] sm:px-10 sm:text-[1.25rem] lg:px-14",
 };
 
 type BaseProps = {
@@ -72,8 +72,9 @@ export function ButtonLink({
       <a
         href={href as string}
         className={cn(base, variants[variant], sizes[size], className)}
-        target="_blank"
-        rel="noopener noreferrer"
+        {...rest}
+        target={rest.target ?? "_blank"}
+        rel={rest.target === "_self" ? rest.rel : "noopener noreferrer"}
       >
         {children}
       </a>

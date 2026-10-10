@@ -1,4 +1,4 @@
-import { site } from "@/data/site";
+import { site } from "@/lib/site-config";
 import { buildMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/sections/PageHero";
 import { Section } from "@/components/ui/Section";
@@ -15,27 +15,27 @@ const sections = [
   {
     heading: "What this policy covers",
     body: [
-      `This policy explains how ${site.name} handles information collected through this website. It is a general-purpose template and should be reviewed by a qualified adviser before you rely on it.`,
+      `This policy explains how ${site.name} handles information collected through this website. This page describes the currently implemented website; provider and retention details must be reviewed before online submission is enabled.`,
     ],
   },
   {
     heading: "Information we collect",
     body: [
-      "When you submit the contact form we collect the details you provide: your name, work email, company, phone number, the service you are interested in, an optional budget range, and your project description.",
-      "We also collect basic technical information that your browser sends automatically, such as the pages you visit and the approximate region you are in.",
+      "The contact form prepares a draft in your own email app. If you choose to send it, the message includes: your name, work email, company, phone number, the service you are interested in, an optional budget range, and your project description.",
+      "The hosting provider may process technical request data to operate and secure the site. No optional analytics or advertising tracker is currently installed.",
     ],
   },
   {
     heading: "How we use it",
     body: [
-      "Enquiry details are used only to respond to your enquiry and to discuss potential work. Technical information is used to understand how the site is used and to improve it.",
+      "Enquiry details sent by email are used to respond and discuss potential work. Your email and hosting providers process information needed to deliver messages and operate this website.",
       "We do not sell your information, and we do not share it with third parties for their own marketing.",
     ],
   },
   {
     heading: "How long we keep it",
     body: [
-      "Enquiry records are kept for as long as needed to respond and to maintain a record of the conversation, then removed on a routine schedule.",
+      "Messages you send remain in the receiving email system. Contact us about retention or deletion; a formal retention schedule must be confirmed by the business.",
     ],
   },
   {
@@ -47,13 +47,13 @@ const sections = [
   {
     heading: "Cookies",
     body: [
-      "This site is built to work without advertising or tracking cookies. If analytics are added later, this policy will be updated to say what is collected and how to opt out.",
+      "This site currently uses no optional analytics or advertising cookies. Necessary browser state may support interface behavior. Optional tracking will require an updated policy and preference controls before activation.",
     ],
   },
   {
     heading: "Contact",
     body: [
-      `Questions about this policy can be sent to ${site.contact.email}. This address is a placeholder until confirmed.`,
+      `Questions about this policy can be sent to ${site.contact.email}.`,
     ],
   },
 ];

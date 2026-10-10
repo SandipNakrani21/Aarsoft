@@ -207,7 +207,7 @@ export function HeroPanel({
               <Award className="h-6 w-6 text-lavender" strokeWidth={1.5} aria-hidden="true" />
             </span>
             <span>
-              <span className="block text-[0.875rem] uppercase tracking-[0.16em] text-ink-400">
+              <span className="block text-[0.875rem] uppercase tracking-[0.16em] text-ink-500">
                 {experience.label}
               </span>
               <span className="mt-1 block text-2xl font-semibold leading-none text-white">

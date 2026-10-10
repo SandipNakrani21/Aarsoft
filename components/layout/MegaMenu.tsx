@@ -4,7 +4,8 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { NavLink } from "@/data/site";
+import type { NavLink } from "@/data/navigation";
+import { navigationIcon } from "@/components/ui/NavigationIcon";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +42,7 @@ export function MegaMenu({
   useEffect(() => setFocus(0), [label]);
 
   const current = menu.items[Math.min(focus, menu.items.length - 1)];
-  const CurrentIcon = current.icon;
+  const CurrentIcon = navigationIcon(current.icon);
 
   const settle = (i: number) =>
     reduced
@@ -97,7 +98,7 @@ export function MegaMenu({
             className="col-span-6 grid content-start grid-cols-2 gap-1 py-1"
           >
             {menu.items.map((sub, i) => {
-              const Icon = sub.icon;
+              const Icon = navigationIcon(sub.icon);
               const on = i === focus;
               return (
                 <motion.li key={sub.href} {...settle(i + 1)} className="relative">
